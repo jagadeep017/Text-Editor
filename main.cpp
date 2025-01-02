@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include "main.h"
 #include "display.h"
 
 using namespace std;
@@ -14,6 +15,7 @@ using namespace std;
 int main(int argc, char *argv[]) {      //argv is the fine name
     char ch;        //char to store user input
     struct winsize w;
+    text t(argv[1]);        //create a text object with the file name
 
     while(1){
         if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {   //get the size of the terminal window w.ws_row and w.ws_col
