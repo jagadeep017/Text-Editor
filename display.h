@@ -2,7 +2,7 @@
 #define DISPLAY_H
 
 #include "main.h"
-void display(int row,int col,text t);
+void display(int row,int col,text& t);
 
 void add_data(char* name,struct charn **head,struct charn **tail);
 

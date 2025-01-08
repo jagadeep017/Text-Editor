@@ -12,18 +12,24 @@ struct charn{
     struct charn* prev;
 };
 
+void add_data(char* filename,struct charn **head,struct charn **tail);
+
 class text{  
     struct charn* head;
     struct charn* tail;
+    unsigned int Cursor ;
+    unsigned int line;
     public:
     text(char* filename){
         head = 0;
         tail = 0;
+        Cursor  = 0;
+        line = 0;
         add_data(filename,&head,&tail);
     }
-    void display(int row,int col,text t);
-    void add_data(char* filename,struct charn **head,struct charn **tail);
-    void insert_last(char data,struct charn **head,struct charn **tail);
+    friend void display(int row,int col,text& t);
+    friend void add_data(char* filename,struct charn **head,struct charn **tail);
+    friend void insert_last(char data,struct charn **head,struct charn **tail);
 };
 
 #endif
