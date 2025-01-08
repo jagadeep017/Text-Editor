@@ -19,9 +19,11 @@ class text{
     text(char* filename);{
         head = NULL;
         tail = NULL;
-        add_data(filename,&head,&tail);
+        add_data(filename);
     }
-    friend void display(int row,int col,text t);
+    void display(int row,int col,text t);
+    void add_data(char* filename);
+    void insert_last(char data);
 }
 
 #endif
