@@ -1,6 +1,6 @@
 #include "main.h"
 #include "display.h"
-#include <cstring.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 
@@ -12,39 +12,38 @@ void display(int row,int col,text t){
 void add_data(char* name,struct charn **head,struct charn **tail){
     char *temp=strstr(name,".");
     if(temp==NULL){
-        printf("Invalid file name\n");
+        std::cout<<"Invalid file name\n";
         exit(0);
     }
     if(strcmp(temp,".txt")!=0||strcmp(temp,".c")!=0||strcmp(temp,".cpp")!=0){
-        printf("Invalid file name\n");
+        std::cout<<"Invalid file type\n";
         exit(0);
     }
-    ifstream file(name);
+    std::ifstream file(name);
     if(!file.is_open()){
-        printf("Invalid file name\n");
+        std::cout<<"File "<<name<<" not found\n";
         exit(0);
     }
     while(!file.eof()){
-        insert_last(file.getchar());
+        insert_last(file.get(),head,tail);
     }
-
-    
+    file.close();
 }
 
-void insert_last(char c){
-    struct charn *new=new charn;
-    if(new==NULL){
+void insert_last(char c,struct charn **head,struct charn **tail){
+    struct charn *new1=new charn;
+    if(new1==NULL){
         printf("Memory allocation failed\n");
         exit(0);
     }
-    new->data=c;
-    new->next=NULL;
+    new1->data=c;
+    new1->next=NULL;
     if(head==NULL){
-        head=new;
-        tail=new;
+        *head=new1;
+        *tail=new1;
     }
     else{
-        tail->next=new;
-        tail=new;
+        (*tail)->next=new1;
+        *tail=new1;
     }
 }

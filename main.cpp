@@ -19,12 +19,15 @@ int main(int argc, char *argv[]) {      //argv is the fine name
 
     while(1){
         if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w) == -1) {   //get the size of the terminal window w.ws_row and w.ws_col
-            perror("ioctl");
+            std::cout<<"Error in getting the terminal size\n";
             return 1;
         }
+        while((ch=getchar())){      //get the user input
+            display(w.ws_row,w.ws_col,t);
 
-        ch=getchar();       //get the user input
-
+            
+        }
+        
     }
     return 0;
 }
