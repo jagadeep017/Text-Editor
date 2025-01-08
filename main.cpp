@@ -8,6 +8,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include "main.h"
+#include "edit.h"
 #include "display.h"
 
 using namespace std;
@@ -23,9 +24,28 @@ int main(int argc, char *argv[]) {      //argv is the fine name
             return 1;
         }
         while((ch=getchar())){      //get the user input
+
+            if(ch=='\033'){         //if the user input is escape
+                ch=getchar();       //get the next character
+                if(ch=='['){        //if the next character is [
+                    ch=getchar();   //get the next character
+                    if(ch=='A'){    //if the next character is A
+                        move_cursor(-1,t);      //move the cursor up
+                    }
+                    else if(ch=='B'){   //if the next character is B
+                        move_cursor(1,t);      //move the cursor down
+                    }
+                    else if(ch=='C'){   //if the next character is C
+                        move_cursor_side(1,t);      //move the cursor right
+                    }
+                    else if(ch=='D'){   //if the next character is D
+                        move_cursor_side(-1,t);      //move the cursor left
+                    }
+                }
+            }
             display(w.ws_row,w.ws_col,t);
 
-            
+
         }
         
     }

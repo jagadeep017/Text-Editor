@@ -9,19 +9,27 @@ void display(int row,int col,text& t){
     system("clear");    //clear the screen
     struct charn *temp=t.head;
     unsigned int line_count=0,char_count=0;
+    //char prev='\0';
     while (temp!=NULL&&temp->data!=EOF) {
-        if (temp->data=='\n') {
-            line_count++;
-            char_count=0;
-        }
         if(line_count==t.line&&char_count==t.Cursor){
-            std::cout<<"\033[47m"<<temp->data<<"\033[0m";
+            if(temp->data=='\n'){
+                std::cout<<"\033[47m"<<' '<<temp->data<<"\033[0m";
+            }
+            else{
+                std::cout<<"\033[47m"<<temp->data<<"\033[0m";
+            }
         }
         else{
             std::cout<<temp->data;
         }
+        if (temp->data=='\n') {
+            line_count++;
+            char_count=0;
+        }
+        else{
+            char_count++;
+        }
         temp=temp->next;
-        char_count++;
     }
     std::cout<<std::endl;
 }

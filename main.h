@@ -30,6 +30,8 @@ class text{
     friend void display(int row,int col,text& t);
     friend void add_data(char* filename,struct charn **head,struct charn **tail);
     friend void insert_last(char data,struct charn **head,struct charn **tail);
+    friend void move_cursor(int pos,text& t);
+    friend void move_cursor_side(int pos,text& t);
 };
 
 #endif
