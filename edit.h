@@ -5,6 +5,6 @@
 
 void move_cursor(int pos,text& t);
 
-void move_cursor_side(int pos,text& t);
+void move_cursor_side(int pos,text& t,int max);
 
 #endif
