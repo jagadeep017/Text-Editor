@@ -1,10 +1,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-typedef enum Mode{
+typedef enum Action {
     INSERT,
-    READ,
-}mode;
+    AUTOSUGGESTION,
+    EXIT
+}action;
 
 struct charn{
     char data;
@@ -30,8 +31,7 @@ class text{
         offset = 0;
         offset2 = 0;
         atend = 0;
-        prev_cursor = 0;
-
+        //prev_cursor = 0;
         add_data(filename,&head,&tail);
     }
     friend void display(int row,int col,text& t);

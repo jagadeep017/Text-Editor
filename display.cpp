@@ -23,54 +23,28 @@ void display(int row,int col,text& t){
             }
             flag=0;
             courser_line=line_count;
-            // if(temp->data=='\n'&&flag){
-            //     t.atend=1;
-            //     std::cout<<"\033[47m"<<' '<<temp->data<<"\033[0m";
-            // }
-            // else if(char_count==t.Cursor){
-            //     if(temp->data=='\n'){
-            //         t.atend=1;
-            //     }
-            //     else{
-            //         t.atend=0;
-            //     }
-            //     std::cout<<"\033[47m"<<temp->data<<"\033[0m";
-            //     flag=0;
-            // }
-            // else{
-            //     if(temp->data=='\n'&&temp->prev->data=='\n'&&t.Cursor>0&&flag){
-            //         move_cursor_side(col,t,col);
-            //         t.Cursor=0;
-            //     }
-            //     std::cout<<temp->data;
-            // }
         }
         else{
             std::cout<<temp->data;
         }
         if (temp->data=='\n') {
-            //flag=1;
             line_count++;
             if(flag){
                 courser_col=0;
             }
         }
-        else{
-            char_count++;
-            if(flag){
-                courser_col++;
-            }
+        else if(flag){
+            courser_col++;
         }
+        char_count++;
         temp=temp->next;
         if(line_count==row-2){
             break;
         }
-        // if(char_count==col-1){
-        //     while(temp->data!='\n'){
-        //         temp=temp->next;
-        //     }
-        //     continue;
-        // }
+        if(courser_col==col){
+            line_count++;
+            courser_col=0;
+        }
     }
     std::cout<<"Ln "<<courser_line+1<<", Col "<<courser_col+1<<std::endl;
 }
