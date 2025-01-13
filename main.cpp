@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {      //argv is the fine name
             std::cout<<"Error in getting the terminal size\n";
             return 1;
         }
-        if(ch=='\033'){         //if the user inp            
+        if(ch=='\033'){         //if the user input is escape      
         ch=getchar();       //get the next character
             if(ch=='['){        //if the next character is [
                 ch=getchar();   //get the next character
@@ -39,10 +39,10 @@ int main(int argc, char *argv[]) {      //argv is the fine name
                     move_cursor(1,t);      //move the cursor down
                 }
                 else if(ch=='C'){   //if the next character is C
-                    move_cursor_side(1,t,w.ws_col);      //move the cursor right
+                    move_cursor_side(1,t);      //move the cursor right
                 }
                 else if(ch=='D'){   //if the next character is D
-                    move_cursor_side(-1,t,w.ws_col);      //move the cursor left
+                    move_cursor_side(-1,t);      //move the cursor left
                 }
             }
         }

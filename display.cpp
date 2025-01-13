@@ -5,7 +5,9 @@
 #include <iostream>
 #include <fstream>
 
-void display(int row,int col,text& t){
+void display(unsigned short int row,unsigned short int col,text& t){
+    t.prev=NULL;
+    t.prev_line_len=0;
     system("clear");    //clear the screen
     struct charn *temp=t.head;
     unsigned int line_count=0,char_count=0;
@@ -13,12 +15,14 @@ void display(int row,int col,text& t){
     char flag=1;
     while (temp!=NULL&&temp->data!=EOF) {
         if(char_count==t.cursor){
+            t.Cursor=temp;
             if(temp->data=='\n'){
-                t.atend=1;
+                if(line_count==row-3){
+                    t.atend=1;
+                }
                 std::cout<<"\033[47m"<<' '<<"\033[0m"<<temp->data;
             }
             else{
-                t.atend=0;
                 std::cout<<"\033[47m"<<temp->data<<"\033[0m";
             }
             flag=0;
@@ -30,6 +34,8 @@ void display(int row,int col,text& t){
         if (temp->data=='\n') {
             line_count++;
             if(flag){
+                t.prev_line_len=courser_col;
+                t.prev=temp;
                 courser_col=0;
             }
         }
@@ -45,6 +51,13 @@ void display(int row,int col,text& t){
             line_count++;
             courser_col=0;
         }
+    }
+    t.cursor_col=courser_col;
+    if(courser_line==line_count-1){
+        t.atend++;
+    }
+    else{
+        t.atend=0;
     }
     std::cout<<"Ln "<<courser_line+1<<", Col "<<courser_col+1<<std::endl;
 }
