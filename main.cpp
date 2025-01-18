@@ -46,6 +46,9 @@ int main(int argc, char *argv[]) {      //argv is the fine name
                 }
             }
         }
+        else if (ch=='n') {
+            insert_before('\n', t);
+        }
         if(ch=='\n'){
             continue;
         }

@@ -51,6 +51,7 @@ class text{
     friend void display(unsigned short int row,unsigned short int col,text& t);
     friend void add_data(char* filename,struct charn **head,struct charn **tail,unsigned int *lines);
     friend void insert_last(char data,struct charn **head,struct charn **tail);
+    friend void insert_before(char data,text& t);
     friend void move_cursor(int pos,text& t);
     friend void move_cursor_side(int pos,text& t);
 };
