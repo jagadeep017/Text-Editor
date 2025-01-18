@@ -46,9 +46,10 @@ int main(int argc, char *argv[]) {      //argv is the fine name
                 }
             }
         }
+        if(ch=='\n'){
+            continue;
+        }
         display(w.ws_row,w.ws_col,t);
-
-
         }
     return 0;
 }

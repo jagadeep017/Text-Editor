@@ -1,80 +1,102 @@
 #include "main.h"
+#include "edit.h"
+#include <stdio.h>
 
 void move_cursor(int pos,text& t){
-    if((pos<0&&!t.prev)||(pos>0&&t.atend))  return;
-    else if(pos<0){
-        if(t.prev_cursor_col==0){
-            if(t.cursor_col>t.prev_line_len){
-                if(t.cursor>t.cursor_col+1){
-                    t.cursor-=(t.cursor_col+1);
-                }
-                else{
-                    t.cursor=0;
-                }
-            }
-            else{
-                if(t.cursor>t.prev_line_len+1){
-                    t.cursor-=t.prev_line_len+1;
-                }
-                else{
-                    t.cursor=0;
-                }
-            }
-        }
-        else{
-            if(t.prev_cursor_col>t.prev_line_len){
-                t.cursor-=(t.cursor_col+1);
-            }
-            else{
-                t.cursor-=(t.cursor_col+t.prev_line_len-t.prev_cursor_col+1);
-            }
+    unsigned int temp;
+    if(pos<0){
+        while(pos&&t.cursor_line){
+            t.cursor_line--;
+            t.prev=t.prev->prev;
+            pos++;
         }
     }
     else{
-        struct charn *temp=t.Cursor;
-        unsigned int length=0;
-        while(temp&&temp->data!='\n'&&temp->data!=-1){
-            temp=temp->next;
-            t.cursor++;
-        }
-        if(temp){
-            temp=temp->next;
-        }
-        while(temp&&temp->data!='\n'&&temp->data!=-1){
-            temp=temp->next;
-            length++;
-        }
-        if(t.prev_cursor_col){
-            if(length>t.prev_cursor_col){
-                t.cursor+=t.prev_cursor_col+1;
+        if(pos+t.cursor_line>=t.line_count) return;
+        while(pos&&t.cursor_line<t.line_count){
+            t.cursor_line++;
+            if(t.prev){
+                t.prev=t.prev->next;
             }
             else{
-                t.cursor+=length+1;
+                t.prev=t.head;
             }
-        }
-        else{
-            if(length>t.cursor_col){
-                t.cursor+=t.cursor_col+1;
-            }
-            else{
-                t.cursor+=length+1;
-            }
+            pos--;
         }
     }
-    if(t.prev_cursor_col==0){
+    if(t.prev){
+        temp=len(t.prev->next);
+    }
+    else{
+        temp=len(t.head);
+    }
+    if(t.prev_cursor_col){
+        if(t.prev_cursor_col+1>temp){
+            t.cursor_col=temp-1;
+        }
+        else{
+            t.cursor_col=t.prev_cursor_col;
+        }
+    }
+    else{
         t.prev_cursor_col=t.cursor_col;
+        if(t.cursor_col+1>temp){
+            t.cursor_col=temp-1;
+        }
     }
 }
 
 void move_cursor_side(int pos,text& t){
-    if(pos<0&&t.cursor<=-pos){
-        t.prev_cursor_col=0;
-        t.cursor=0;
-    }
-    else{
-        if(t.atend!=2||pos<0){
-            t.prev_cursor_col=0;
-            t.cursor+=pos;
+    if(pos<0){
+        //struct charn *temp=t.Cursor;
+        while(pos&&t.Cursor){
+            t.Cursor=t.Cursor->prev;
+            if(t.Cursor==NULL){
+                if(t.prev==NULL);
+                else{
+                    t.cursor_line--;
+                    t.Cursor=t.prev->tail;
+                    t.cursor_col=len(t.prev)-1;
+                    t.prev=t.prev->prev;
+                }
+            }
+            else{
+                t.cursor_col--;
+            }
+            pos++;
         }
     }
+    else{
+        while(pos&&t.Cursor){
+            t.Cursor=t.Cursor->next;
+            if(t.Cursor==NULL&&t.prev&&t.prev->next->next==NULL) return;
+            if(t.Cursor==NULL){
+                t.cursor_line++;
+                if(t.prev){
+                    t.Cursor=t.prev->next->next->head;
+                    t.prev=t.prev->next;
+                }
+                else{
+                    t.Cursor=t.head->next->head;
+                    t.prev=t.head;
+                }
+                t.cursor_col=0;
+            }
+            else{
+                t.cursor_col++;
+            }
+            pos--;
+        }
+    }
+    t.prev_cursor_col=0;
+}
+
+unsigned int len(struct line * head){
+    unsigned int res=0;
+    struct charn *temp=head->head;
+    while(temp){
+        res++;
+        temp=temp->next;
+    }
+    return res;
 }
