@@ -36,6 +36,18 @@ void insert_before(char data,text& t){
         t.cursor_line++;
         t.line_count++;
     }
+    else if(data){
+        new2->next=t.Cursor;
+        new2->prev=t.Cursor->prev;
+        if(t.Cursor->prev){
+            t.Cursor->prev->next=new2;
+        }
+        else{
+            t.Cursorline->head=new2;
+        }
+        t.Cursor->prev=new2;
+        t.cursor_col++;
+    }
     else{
         std::cout<<std::endl;
     }
