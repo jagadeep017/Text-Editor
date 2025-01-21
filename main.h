@@ -25,7 +25,7 @@ void add_data(char* filename,struct line **head,struct line **tail,unsigned int 
 class text{  
     struct line* head;
     struct line* tail;
-    struct line* prev;                //tail of the line before the cursor
+    struct line* Cursorline;
     struct charn* Cursor;               //to store the address of the cursor
     unsigned int cursor_line;
     unsigned int prev_line_len;
@@ -38,7 +38,7 @@ class text{
     text(char* filename){
         head = 0;
         tail = 0;
-        prev = 0;
+        Cursorline=0;
         cursor_line  = 0;
         atend = 0;
         prev_line_len=0;

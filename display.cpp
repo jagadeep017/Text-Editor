@@ -39,11 +39,12 @@ void display(unsigned short int row,unsigned short int col,text& t){
                         t.atend=1;
                     }
                     std::cout<<"\033[47m"<<' '<<"\033[0m"<<temp2->data;
-                    t.prev=temp->prev;
                 }
                 else{
                     std::cout<<"\033[47m"<<temp2->data<<"\033[0m";
                 }
+                t.Cursorline=temp;
+                //t.prev=temp->prev;
                 t.Cursor=temp2;
             }
             else{
