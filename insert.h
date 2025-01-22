@@ -5,4 +5,8 @@
 
 void insert_before(char data,text& t);
 
+void delete_before(text& t);
+
+void delete_after(text& t);
+
 #endif
