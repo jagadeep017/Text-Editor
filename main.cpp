@@ -7,11 +7,12 @@
 #include "main.h"
 #include "edit.h"
 #include "display.h"
+#include "insert.h"
 #include <signal.h>
 
 
-int main(int argc, char *argv[]) {      //argv is the fine name
-    char ch,flag=0;        //char to store user input
+int main(int argc, char *argv[]) {      //argv is the file name
+    char ch;        //char to store user input
 
     text t(argv[1]);        //create a text object with the file name
 
@@ -30,6 +31,12 @@ int main(int argc, char *argv[]) {      //argv is the fine name
             getmaxyx(stdscr, y, x);     //get terminal row and col values
             display(y,x,t);     //display
         }
+        else if(t.mode==READ&&ch=='i'){
+            t.mode=1;
+        }
+        else if(ch=='~'){       //if the user input is ~
+            delete_after(t);        //delete the character after the cursor
+        }
         else if(ch=='\033'){         //if the user input is escape      
             ch=getch();       //get the next character
             if(ch=='['){        //if the next character is [
@@ -47,18 +54,27 @@ int main(int argc, char *argv[]) {      //argv is the fine name
                     move_cursor_side(-1,t);      //move the cursor left
                 }
             }
-        }
-        else if (ch=='\n') {                //if the user input is enter
-            insert_before('\n', t);
-        }
-        else if(ch=='\t'){                  //if the user input is tab
-            for(int i=0;i<4;i++){
-                insert_before(' ',t);
+            else{
+                t.mode=READ;
             }
         }
-        else{                               //if the user input is a character
-            insert_before(ch, t);
+        else if(t.mode==INSERT){
+            if (ch==127) {     //if the user input is backspace
+                delete_before(t);       //delete the character before the cursor
+            }
+            else if (ch=='\n') {                //if the user input is enter
+                insert_before('\n', t);
+            }
+            else if(ch=='\t'){                  //if the user input is tab
+                for(int i=0;i<4;i++){
+                    insert_before(' ',t);
+                }
+            }
+            else{                               //if the user input is a character
+                insert_before(ch, t);
+            }
         }
+        
         display(y,x,t);
         if(ch=='q'){
             endwin();   //end the session and resorte the terminal

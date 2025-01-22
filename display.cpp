@@ -82,6 +82,12 @@ void display(unsigned short int row,unsigned short int col,text& t){
         temp1--;
     }
     // std::cout<<"\033[36m"<<std::setw(col-20)<<"Ln "<<t.cursor_line+1<<", Col "<<t.cursor_col+1<<", ";
+    if(t.mode==INSERT){
+        printw("--INSERT MODE-- \t\t\t\t");
+    }
+    else{
+        printw("\t\t\t\t\t\t");
+    }
     printw("Ln %d, Col %d, ",t.cursor_line+1,t.cursor_col+1);
     if(offset==0){
         // std::cout<<"TOP";

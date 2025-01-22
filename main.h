@@ -1,14 +1,16 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-typedef enum Action {
+typedef enum Mode {
+    READ,
     INSERT,
     AUTOSUGGESTION,
     EXIT
-}action;
+}mode;
 
 struct charn{
     char data;
+    unsigned short color;
     struct charn* next;
     struct charn* prev;
 };
@@ -35,6 +37,7 @@ class text{
     unsigned int line_offset;
     char atend;                         //to check if the cursor is at the end or at the beginning
     public:
+    unsigned int mode;
     text(char* filename){
         head = 0;
         tail = 0;
@@ -46,12 +49,15 @@ class text{
         cursor_col=0;
         line_count=0;
         line_offset=0;
+        mode=0;
         add_data(filename,&head,&tail,&line_count);
     }
     friend void display(unsigned short int row,unsigned short int col,text& t);
     friend void add_data(char* filename,struct charn **head,struct charn **tail,unsigned int *lines);
     friend void insert_last(char data,struct charn **head,struct charn **tail);
     friend void insert_before(char data,text& t);
+    friend void delete_before(text& t);
+    friend void delete_after(text& t);
     friend void move_cursor(int pos,text& t);
     friend void move_cursor_side(int pos,text& t);
 };
