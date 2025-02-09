@@ -1,9 +1,8 @@
-#include "insert.h"
 #include "main.h"
-#include "edit.h"
 #include <iostream>
 
-void insert_before(char data,text& t){
+//inserts the character before the cursor
+void text::insert_before(char data){
     
     struct charn *new2=new charn;
     if(new2==NULL) {
@@ -12,95 +11,104 @@ void insert_before(char data,text& t){
     }
     new2->next=NULL;
     new2->data=data;
-    if(data=='\n'){
+    if(data=='\n'){                             //inserting a new line(\n)
         struct line *new1=new line;
         if(new1==NULL) {
             std::cout<<"Memory allocation failure"<<std::endl;
             return;
         }
-        if(t.Cursorline){
-            new1->next=t.Cursorline->next;new1->prev=t.Cursorline;
-            new2->prev=t.Cursor->prev;
-            if(t.Cursor->prev){
-                t.Cursor->prev->next=new2;
-                t.Cursor->prev=NULL;
+        if(Cursorline){
+            new1->next=Cursorline->next;new1->prev=Cursorline;
+            new2->prev=Cursor->prev;
+            if(Cursor->prev){
+                Cursor->prev->next=new2;
+                Cursor->prev=NULL;
             }
             else{
-                t.Cursorline->head=new2;
+                Cursorline->head=new2;
             }
-            new1->tail=t.Cursorline->tail;
-            t.Cursorline->tail=new2;
-            t.Cursorline->next=new1;
-            new1->head=t.Cursor;
-            t.prev_line_len=t.cursor_col=0;
-            t.Cursorline=t.Cursorline->next;
+            new1->tail=Cursorline->tail;
+            Cursorline->tail=new2;
+            Cursorline->next=new1;
+            new1->head=Cursor;
+            cursor_col=0;
+            Cursorline=Cursorline->next;
         }
-        t.cursor_line++;
-        t.line_count++;
+        cursor_line++;
+        line_count++;
     }
     else if(data){
-        new2->next=t.Cursor;
-        new2->prev=t.Cursor->prev;
-        if(t.Cursor->prev){
-            t.Cursor->prev->next=new2;
+        new2->next=Cursor;
+        new2->prev=Cursor->prev;
+        if(Cursor->prev){
+            Cursor->prev->next=new2;
         }
         else{
-            t.Cursorline->head=new2;
+            Cursorline->head=new2;
         }
-        t.Cursor->prev=new2;
-        t.cursor_col++;
+        Cursor->prev=new2;
+        cursor_col++;
     }
 }
 
-void delete_before(text &t){
-    struct charn *temp=t.Cursor->prev;
-    struct line *temp1=t.Cursorline->prev;
+//inserts the character the cursor is pointing to
+void text::delete_before(){
+    struct charn *temp=Cursor->prev;
+    struct line *temp1=Cursorline->prev;
     if(temp){         //delete the prev element
-        if((temp=t.Cursor->prev->prev)){
-            temp->next=t.Cursor;
-            temp=t.Cursor->prev;
-            t.Cursor->prev=temp->prev;
+        if((temp=Cursor->prev->prev)){
+            temp->next=Cursor;
+            temp=Cursor->prev;
+            Cursor->prev=temp->prev;
         }
         else{
-            temp=t.Cursorline->head;
-            t.Cursorline->head=temp->next;
-            t.Cursorline->head->prev=NULL;
+            temp=Cursorline->head;
+            Cursorline->head=temp->next;
+            Cursorline->head->prev=NULL;
         }
-        delete temp;
-        t.cursor_col--;
+        cursor_col--;
     }
-    else if(temp1){        //move to the prev line
+    else if(temp1){        //if cursor is at the start of the line move to the prev line
         temp=temp1->tail;
-        t.cursor_col=len(temp1)-1;
-        temp1->tail=temp->prev;
-        temp1->tail->next=t.Cursorline->head;
-        t.Cursorline->head->prev=temp1->tail;
-        temp1->tail=t.Cursorline->tail;
-        temp1->next=t.Cursorline->next;
-        t.Cursorline->next->prev=temp1;
-        temp1=t.Cursorline;
-        t.Cursorline=t.Cursorline->prev;
-        t.cursor_line--;
-        t.line_count--;
-        delete temp;
+        if(temp->prev){
+            cursor_col=len(temp1)-1;
+            temp1->tail=temp->prev;
+            temp1->tail->next=Cursorline->head;
+            Cursorline->head->prev=temp1->tail;
+        }
+        else{
+            temp1->head=Cursor;
+            cursor_col=0;
+        }
+        temp1->tail=Cursorline->tail;
+        temp1->next=Cursorline->next;
+        if(Cursorline->next){
+            Cursorline->next->prev=temp1;
+        }
+        else{
+            tail=temp1;
+        }
+        temp1=Cursorline;
+        Cursorline=Cursorline->prev;
+        cursor_line--;
+        line_count--;
         delete temp1;
-    }  
+    }
+    delete temp;
 }
 
-void delete_after(text& t){
-    struct charn* temp=t.Cursor;
-    if(t.Cursor->data!='\n'){
-        t.Cursor=t.Cursor->next;
-        delete_before(t);
-        t.cursor_col++;
-        t.Cursor=temp;
+//deletes the character after the cursor
+void text::delete_after(){
+    if(Cursor->data!='\n'){
+        Cursor=Cursor->next;
+        delete_before();
+        cursor_col++;
     }
-    else{
-        unsigned int temp1=t.cursor_col;
-        t.Cursorline=t.Cursorline->next;
-        t.Cursor=t.Cursorline->head;
-        t.cursor_line++;
-        delete_before(t);
-        t.cursor_col=temp1;
+    else if(Cursor->prev){
+        delete_before();
     }
+}
+
+void text::insert_cmd(char ch){
+    command.push_back(ch);
 }

@@ -1,81 +1,89 @@
 #include "main.h"
-#include "edit.h"
 #include <stdio.h>
 
-void move_cursor(int pos,text& t){
+//moves the cursor up or down for pos(int) numbers of lines
+void text::move_cursor(int pos){
     unsigned int temp;
-    if(pos<0){
-        while(pos&&t.cursor_line){
-            t.cursor_line--;
-            t.Cursorline=t.Cursorline->prev;
+    if(pos<0){                                                  //move up
+        while(pos&&cursor_line){
+            cursor_line--;
+            Cursorline=Cursorline->prev;
             pos++;
         }
     }
-    else{
-        if(pos+t.cursor_line>=t.line_count) return;
-        while(pos&&t.cursor_line<t.line_count){
-            t.cursor_line++;
-            t.Cursorline=t.Cursorline->next;
+    else{                                                       //move down
+        if(pos+cursor_line>=line_count) return;
+        while(pos&&cursor_line<line_count){
+            cursor_line++;
+            Cursorline=Cursorline->next;
             pos--;
         }
     }
-    temp=len(t.Cursorline);
+    temp=len(Cursorline);
     
-    if(t.prev_cursor_col){
-        if(t.prev_cursor_col+1>temp){
-            t.cursor_col=temp-1;
+    if(prev_cursor_col){                                        //setting the cursor based on prev_cursor_col and cursor_col
+        if(prev_cursor_col+1>temp){
+            cursor_col=temp-1;
         }
         else{
-            t.cursor_col=t.prev_cursor_col;
+            cursor_col=prev_cursor_col;
         }
     }
     else{
-        t.prev_cursor_col=t.cursor_col;
-        if(t.cursor_col+1>temp){
-            t.cursor_col=temp-1;
+        prev_cursor_col=cursor_col;
+        if(cursor_col+1>temp){
+            cursor_col=temp-1;
         }
+    }
+    Cursor=Cursorline->head;
+    for(int i=0;i<cursor_col;i++){
+        Cursor=Cursor->next;                                    //move to the cursor to the correct position
     }
 }
 
-void move_cursor_side(int pos,text& t){
-    if(pos<0){
-        while(pos&&t.Cursor){
-            t.Cursor=t.Cursor->prev;
-            if(t.Cursor==NULL){
-                if(t.Cursorline->prev==NULL);
-                else{
-                    t.cursor_line--;
-                    t.Cursor=t.Cursorline->prev->tail;
-                    t.cursor_col=len(t.Cursorline->prev)-1;
-                    t.Cursorline=t.Cursorline->prev;
+//moves the cursor left or right for pos(int) number of characters
+//can jump to the next line or prev line if the cursor is at the end or start of the line
+void text::move_cursor_side(int pos){
+    if(pos<0){                                                  //move left
+        if(!Cursor->prev&&!Cursorline->prev) return;            //if the cursor is at the start of the file
+        while(pos&&Cursor){
+            Cursor=Cursor->prev;
+            if(Cursor==NULL){                                   //if the cursor is at the start of the line
+                if(Cursorline->prev){
+                    cursor_line--;
+                    Cursor=Cursorline->prev->tail;
+                    cursor_col=len(Cursorline->prev)-1;
+                    Cursorline=Cursorline->prev;
                 }
             }
             else{
-                t.cursor_col--;
+                cursor_col--;
             }
             pos++;
         }
     }
-    else{
-        while(pos&&t.Cursor){
-            t.Cursor=t.Cursor->next;
-            if(t.Cursor==NULL&&t.Cursorline->next==NULL) return;
-            if(t.Cursor==NULL){
-                t.cursor_line++;
-                t.Cursor=t.Cursorline->next->head;
-                t.Cursorline=t.Cursorline->next;
-                t.cursor_col=0;
+    else{                                                       //move right
+        if(!Cursor->next&&!Cursorline->next) return;            //if the cursor is at the end of the file
+        while(pos&&Cursor){
+            Cursor=Cursor->next;
+            if(Cursor==NULL&&Cursorline->next==NULL) return;
+            if(Cursor==NULL){                                   //if the cursor is at the end of the line
+                cursor_line++;
+                Cursor=Cursorline->next->head;
+                Cursorline=Cursorline->next;
+                cursor_col=0;
             }
             else{
-                t.cursor_col++;
+                cursor_col++;
             }
             pos--;
         }
     }
-    t.prev_cursor_col=0;
+    prev_cursor_col=0;                                          //reset the prev_cursor_col
 }
 
-unsigned int len(struct line * head){
+//returns the length of the line
+unsigned int text::len(struct line * head){
     unsigned int res=0;
     struct charn *temp=head->head;
     while(temp){

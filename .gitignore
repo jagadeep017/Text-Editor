@@ -1,2 +1,9 @@
 /.vscode
 /a.out
+/display.o
+/edit.o
+/insert.o
+/main.o
+/file.o
+/build
+/temp.txt

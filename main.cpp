@@ -5,9 +5,6 @@
 
 #include <curses.h>
 #include "main.h"
-#include "edit.h"
-#include "display.h"
-#include "insert.h"
 #include <signal.h>
 
 
@@ -20,38 +17,49 @@ int main(int argc, char *argv[]) {      //argv is the file name
     int y, x;           //rows and col values of terminal
     getmaxyx(stdscr, y, x); //get terminal row and col values
     raw();
-    display(y,x,t);       //display
+    t.display(y,x);       //display
     noecho();
     cbreak();
+    start_color();
+    init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    // curs_set(0);                    //make the cursor invisible
     
     signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
 
     while((ch=getch())){      //get the user input
         if(ch==-102){           //if the '~Z' means change in terminal size
             getmaxyx(stdscr, y, x);     //get terminal row and col values
-            display(y,x,t);     //display
+        }
+        else if(t.mode==READ&&ch==':'){
+            t.mode=COMMAND;
         }
         else if(t.mode==READ&&ch=='i'){
-            t.mode=1;
+            t.mode=INSERT;
         }
         else if(ch=='~'){       //if the user input is ~
-            delete_after(t);        //delete the character after the cursor
+            t.delete_after();        //delete the character after the cursor
         }
-        else if(ch=='\033'){         //if the user input is escape      
+        else if(ch=='\033'){         //if the user input is escape
             ch=getch();       //get the next character
             if(ch=='['){        //if the next character is [
                 ch=getch();   //get the next character
-                if(ch=='A'){    //if the next character is A
-                    move_cursor(-1,t);      //move the cursor up
+                if(ch=='A'&&t.mode!=COMMAND){    //if the next character is A
+                    t.move_cursor(-1);      //move the cursor up
                 }
-                else if(ch=='B'){   //if the next character is B
-                    move_cursor(1,t);      //move the cursor down
+                else if(ch=='B'&&t.mode!=COMMAND){   //if the next character is B
+                    t.move_cursor(1);      //move the cursor down
                 }
-                else if(ch=='C'){   //if the next character is C
-                    move_cursor_side(1,t);      //move the cursor right
+                else if(ch=='C'&&t.mode!=COMMAND){   //if the next character is C
+                    t.move_cursor_side(1);      //move the cursor right
                 }
-                else if(ch=='D'){   //if the next character is D
-                    move_cursor_side(-1,t);      //move the cursor left
+                else if(ch=='D'&&t.mode!=COMMAND){   //if the next character is D
+                    t.move_cursor_side(-1);      //move the cursor left
+                }
+                else if(ch=='2'){
+                    if(t.mode!=COMMAND){
+                        t.mode=!t.mode;
+                    }
+                    ch=getch();
                 }
             }
             else{
@@ -60,24 +68,34 @@ int main(int argc, char *argv[]) {      //argv is the file name
         }
         else if(t.mode==INSERT){
             if (ch==127) {     //if the user input is backspace
-                delete_before(t);       //delete the character before the cursor
+                t.delete_before();       //delete the character before the cursor
             }
             else if (ch=='\n') {                //if the user input is enter
-                insert_before('\n', t);
+                t.insert_before('\n');
             }
             else if(ch=='\t'){                  //if the user input is tab
                 for(int i=0;i<4;i++){
-                    insert_before(' ',t);
+                    t.insert_before(' ');
                 }
             }
             else{                               //if the user input is a character
-                insert_before(ch, t);
+                t.insert_before(ch);
+            }
+        }
+        else if(t.mode==COMMAND){
+            if(ch=='\n'){
+                //do the command
+                t.mode=READ;
+            }
+            else{
+                t.insert_cmd(ch);
             }
         }
         
-        display(y,x,t);
-        if(ch=='q'){
+        t.display(y,x);
+        if(ch=='q'&&t.mode!=INSERT){
             endwin();   //end the session and resorte the terminal
+            t.save();
             return 0;
         }
     }
