@@ -3,7 +3,7 @@
 
 //inserts the character before the cursor
 void text::insert_before(char data){
-    
+    insert_undo(data);
     struct charn *new2=new charn;
     if(new2==NULL) {
         std::cout<<"Memory allocation failure"<<std::endl;
@@ -111,4 +111,10 @@ void text::delete_after(){
 
 void text::insert_cmd(char ch){
     command.push_back(ch);
+}
+
+void text::pop_ch_cmd(){
+    if(command.length()>1){
+        command.pop_back();
+    }
 }

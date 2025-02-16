@@ -3,7 +3,9 @@
 
 //display the text in buffer on to the screen using ncurses
 void text::display(unsigned short int row,unsigned short int col){
-    clear();                                                        //clear the screen
+    // clear();                                                        //clear the screen
+    curs_set(0);                                                    //make the cursor invisible
+    move(0,0);
     struct line *temp=head;
     unsigned int linecount=0,charcount=0,coursercol=0,courselline=0;
     unsigned short temp1=0;
@@ -68,6 +70,7 @@ void text::display(unsigned short int row,unsigned short int col){
         printw("~\n");
         temp1--;
     }
+    printw("%*c",col,' ');
     if(col>40){
         move(row - 1, col-20);
         printw("Ln %d, Col %d, ",cursor_line+1,cursor_col+1);
@@ -87,8 +90,17 @@ void text::display(unsigned short int row,unsigned short int col){
     if(mode == INSERT) {
         attron(A_BOLD);
         printw("-- INSERT --");
+        move(courselline,coursercol);
         attroff(A_BOLD);
     }
+    else if(mode == COMMAND) {
+        attron(A_BOLD);
+        printw("%s",command.c_str());
+        attroff(A_BOLD);
+    }
+    else {
+        move(courselline,coursercol);
+    }
     attroff(COLOR_PAIR(1));
-    move(courselline,coursercol);
+    curs_set(1);                                                    //make the cursor visible
 }

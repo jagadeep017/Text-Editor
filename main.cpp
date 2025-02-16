@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     raw();
     t.display(y,x);       //display
     noecho();
-    cbreak();
+    // cbreak();
     start_color();
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
     // curs_set(0);                    //make the cursor invisible
@@ -36,7 +36,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
         else if(t.mode==READ&&ch=='i'){
             t.mode=INSERT;
         }
-        else if(ch=='~'){       //if the user input is ~
+        else if(t.mode!=COMMAND&&ch=='~'){       //if the user input is ~
             t.delete_after();        //delete the character after the cursor
         }
         else if(ch=='\033'){         //if the user input is escape
@@ -85,7 +85,11 @@ int main(int argc, char *argv[]) {      //argv is the file name
         else if(t.mode==COMMAND){
             if(ch=='\n'){
                 //do the command
+                t.command_do();
                 t.mode=READ;
+            }
+            else if(ch==127){
+                t.pop_ch_cmd();
             }
             else{
                 t.insert_cmd(ch);
@@ -93,11 +97,6 @@ int main(int argc, char *argv[]) {      //argv is the file name
         }
         
         t.display(y,x);
-        if(ch=='q'&&t.mode!=INSERT){
-            endwin();   //end the session and resorte the terminal
-            t.save();
-            return 0;
-        }
     }
     return 0;
 }

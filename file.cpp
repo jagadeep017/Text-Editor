@@ -47,6 +47,7 @@ void text::add_data(char* name,struct line **head,struct line **tail,unsigned in
         }
         insert_last('\n',&new1->head,&new1->tail);
         *lines+=1;
+        new1->len=line.size();
     }
     file.close();
 }
