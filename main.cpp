@@ -22,24 +22,20 @@ int main(int argc, char *argv[]) {      //argv is the file name
     // cbreak();
     start_color();
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(2, COLOR_BLACK, COLOR_RED);
     // curs_set(0);                    //make the cursor invisible
     
     signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
 
     while((ch=getch())){      //get the user input
+        t.error.clear();
         if(ch==-102){           //if the '~Z' means change in terminal size
             getmaxyx(stdscr, y, x);     //get terminal row and col values
-        }
-        else if(t.mode==READ&&ch==':'){
-            t.mode=COMMAND;
-        }
-        else if(t.mode==READ&&ch=='i'){
-            t.mode=INSERT;
         }
         else if(t.mode!=COMMAND&&ch=='~'){       //if the user input is ~
             t.delete_after();        //delete the character after the cursor
         }
-        else if(ch=='\033'){         //if the user input is escape
+        else if(ch=='\033'&&t.mode!=COMMAND){         //if the user input is escape
             ch=getch();       //get the next character
             if(ch=='['){        //if the next character is [
                 ch=getch();   //get the next character
@@ -55,10 +51,8 @@ int main(int argc, char *argv[]) {      //argv is the file name
                 else if(ch=='D'&&t.mode!=COMMAND){   //if the next character is D
                     t.move_cursor_side(-1);      //move the cursor left
                 }
-                else if(ch=='2'){
-                    if(t.mode!=COMMAND){
-                        t.mode=!t.mode;
-                    }
+                else if(ch=='2'){               //insert esc sequence occured
+                    t.mode=!t.mode;
                     ch=getch();
                 }
             }
@@ -94,6 +88,10 @@ int main(int argc, char *argv[]) {      //argv is the file name
             else{
                 t.insert_cmd(ch);
             }
+        }
+        else{
+            t.r_command.push_back(ch);
+            t.r_command_do();
         }
         
         t.display(y,x);

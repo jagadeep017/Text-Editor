@@ -92,3 +92,24 @@ unsigned int text::len(struct line * head){
     }
     return res;
 }
+
+void text::move_to(unsigned int line,unsigned int col){
+    if(cursor_line>line){
+        for(unsigned int i=cursor_line-line;i&&Cursorline->prev;i--){
+            Cursorline=Cursorline->prev;
+            cursor_line--;
+        }
+    }
+    else if(cursor_line<line){
+        for(unsigned int i=line-cursor_line;i&&Cursorline->next;i--){
+            Cursorline=Cursorline->next;
+            cursor_line++;
+        }
+    }
+    Cursor=Cursorline->head;
+    cursor_col=0;
+    while(col--&&Cursor->next){
+        Cursor=Cursor->next;
+        cursor_col++;
+    }
+}

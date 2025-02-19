@@ -109,10 +109,41 @@ void text::delete_after(){
     }
 }
 
+//deletes the current line
+void text::delete_line(){
+    if(!line_count) return;
+    struct line *temp=Cursorline;
+    if(Cursorline->next){
+        move_to(cursor_line+1, cursor_col);
+        Cursorline->prev=temp->prev;
+        if(temp==head){
+            head=Cursorline;
+        }
+        else{
+            temp->prev->next=Cursorline;
+        }
+    }
+    else{
+        move_to(cursor_line-1,cursor_col);
+        Cursorline->next=NULL;
+        tail=Cursorline;
+    }
+    line_count--;
+    struct charn *temp1=temp->head;
+    while(temp1->next){
+        temp1=temp1->next;
+        delete temp1->prev;
+    }
+    delete temp1;
+    delete temp;
+}
+
+//pushes a char into the command string
 void text::insert_cmd(char ch){
     command.push_back(ch);
 }
 
+//baskspace for commands
 void text::pop_ch_cmd(){
     if(command.length()>1){
         command.pop_back();

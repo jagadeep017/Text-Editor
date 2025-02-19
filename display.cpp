@@ -11,7 +11,7 @@ void text::display(unsigned short int row,unsigned short int col){
     unsigned short temp1=0;
     unsigned int offset=0, offset2=0;
     
-    if(line_offset+cursor_line>=row-4){
+    if(cursor_line>=row-4){
         offset=cursor_line+4-row;
     }
     linecount=line_count;
@@ -71,7 +71,7 @@ void text::display(unsigned short int row,unsigned short int col){
         temp1--;
     }
     printw("%*c",col,' ');
-    if(col>40){
+    if(error.empty()&&mode!=COMMAND?1:col>50){
         move(row - 1, col-20);
         printw("Ln %d, Col %d, ",cursor_line+1,cursor_col+1);
         if(offset==0){
@@ -83,7 +83,6 @@ void text::display(unsigned short int row,unsigned short int col){
         else{
             printw("%d%%",(cursor_line*100)/line_count);
         }
-        line_offset=offset;
         linecount=cursor_line+1;
     }
     move(row - 1, 0);
@@ -92,6 +91,12 @@ void text::display(unsigned short int row,unsigned short int col){
         printw("-- INSERT --");
         move(courselline,coursercol);
         attroff(A_BOLD);
+    }
+    else if(error.size()){
+        attron(COLOR_PAIR(2));
+        printw("%s",error.c_str());
+        move(courselline,coursercol);
+        attron(COLOR_PAIR(2));
     }
     else if(mode == COMMAND) {
         attron(A_BOLD);

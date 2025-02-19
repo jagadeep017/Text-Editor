@@ -20,6 +20,10 @@ $(TARGET): $(OBJECTS)
 
 -include $(DEPENDS)
 
+debug: CXX += -g
+debug: all
+
+
 clean:
 	rm -f $(OBJECTS) $(TARGET) $(DEPENDS)
 

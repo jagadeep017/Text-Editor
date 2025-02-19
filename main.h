@@ -50,14 +50,14 @@ struct str{
     std::string data;
     struct str* next;
     struct str* prev;
-    struct line* Line;
+    unsigned int line;
     unsigned int col;
     unsigned char type;
     str(){
         data="\0";
         next=NULL;
         prev=NULL;
-        Line=NULL;
+        line=0;
         type='\0';
         col=0;
     }
@@ -72,15 +72,6 @@ struct undo{
     }
 };
 
-// struct redo{
-//     struct str* head;
-//     struct str* curr;
-//     redo(){
-//         head=NULL;
-//         curr=NULL;
-//     }
-// };
-
 
 class text{  
     struct line* head;
@@ -91,12 +82,13 @@ class text{
     unsigned int prev_cursor_col;
     unsigned int cursor_col;
     unsigned int line_count;
-    unsigned int line_offset;
     struct undo Undo;
     struct undo Redo;
-    std::string command;
     public:
-    unsigned int mode;
+    std::string command;
+    std::string r_command;
+    std::string error;
+    unsigned char mode;
     text(char* filename){
         head = NULL;
         tail = NULL;
@@ -104,12 +96,13 @@ class text{
         prev_cursor_col=0;
         cursor_col=0;
         line_count=0;
-        line_offset=0;
         mode=0;
         add_data(filename,&head,&tail,&line_count);
         Cursorline=head;
         Cursor=Cursorline->head;
-        command=":";
+        command="";
+        error="";
+        r_command="";
     }
 
     //display.cpp
@@ -124,6 +117,7 @@ class text{
     void insert_before(char data);
     void delete_before();
     void delete_after();
+    void delete_line();
     void insert_cmd(char ch);
     void pop_ch_cmd();
 
@@ -131,14 +125,17 @@ class text{
     void move_cursor(int pos);
     void move_cursor_side(int pos);
     unsigned int len(struct line * head);
+    void move_to(unsigned int line,unsigned int col);
 
     //command.cpp
     void command_do();
+    void r_command_do();
 
     //undo.cpp
     void undo();
     void redo();
     void insert_undo(char ch);
+    void push_to_redo(struct str* node);
 };
 
 #endif
