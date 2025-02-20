@@ -49,6 +49,7 @@ void text::insert_before(char data){
         Cursor->prev=new2;
         cursor_col++;
     }
+    Cursorline->len++;
 }
 
 //inserts the character the cursor is pointing to
@@ -67,11 +68,12 @@ void text::delete_before(){
             Cursorline->head->prev=NULL;
         }
         cursor_col--;
+        Cursorline->len--;
     }
     else if(temp1){        //if cursor is at the start of the line move to the prev line
         temp=temp1->tail;
         if(temp->prev){
-            cursor_col=len(temp1)-1;
+            cursor_col=temp1->len-1;
             temp1->tail=temp->prev;
             temp1->tail->next=Cursorline->head;
             Cursorline->head->prev=temp1->tail;
@@ -80,6 +82,7 @@ void text::delete_before(){
             temp1->head=Cursor;
             cursor_col=0;
         }
+        temp1->len+=Cursorline->len-1;
         temp1->tail=Cursorline->tail;
         temp1->next=Cursorline->next;
         if(Cursorline->next){
@@ -114,7 +117,17 @@ void text::delete_line(){
     if(!line_count) return;
     struct line *temp=Cursorline;
     if(Cursorline->next){
-        move_to(cursor_line+1, cursor_col);
+        Cursorline=Cursorline->next;
+        Cursor=Cursorline->head;
+        if(Cursorline->len>cursor_col){
+            unsigned temp3=cursor_col;
+            cursor_col=0;
+            move_cursor_side(temp3);
+        }
+        else{
+            cursor_col=0;
+            move_cursor_side(Cursorline->len-1);
+        }
         Cursorline->prev=temp->prev;
         if(temp==head){
             head=Cursorline;

@@ -4,18 +4,22 @@ void text::undo(){
     //pop the tail make changes
     struct str *temp=Undo.tail;
     if(!Undo.tail)  return;
-    move_to(temp->line, temp->col);
-    for(int i=0;i<temp->data.size();i++){
-        delete_after();
-    }
-    if(temp->prev){
-        temp->prev->next=NULL;
+    if(temp->type==ADD){
+        move_to(temp->line, temp->col);
+        for(int i=0;i<temp->data.size();i++){
+            delete_after();
+        }
+        if(temp->prev){
+            temp->prev->next=NULL;
+        }
+        else{
+            Undo.head=NULL;
+        }
+        Undo.tail=temp->prev;
     }
     else{
-        Undo.head=NULL;
+        
     }
-    Undo.tail=temp->prev;
-
     //push the change to the redo stack
     push_to_redo(temp);
 }

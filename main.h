@@ -89,21 +89,10 @@ class text{
     std::string r_command;
     std::string error;
     unsigned char mode;
-    text(char* filename){
-        head = NULL;
-        tail = NULL;
-        cursor_line  = 0;
-        prev_cursor_col=0;
-        cursor_col=0;
-        line_count=0;
-        mode=0;
-        add_data(filename,&head,&tail,&line_count);
-        Cursorline=head;
-        Cursor=Cursorline->head;
-        command="";
-        error="";
-        r_command="";
-    }
+    
+    //constructor.cpp
+    text(char* filename);
+    ~text();
 
     //display.cpp
     void display(unsigned short int row,unsigned short int col);
@@ -137,5 +126,9 @@ class text{
     void insert_undo(char ch);
     void push_to_redo(struct str* node);
 };
+
+char is_num(std::string str);
+
+unsigned int str_to_num(std::string str);
 
 #endif

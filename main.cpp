@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     // cbreak();
     start_color();
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
-    init_pair(2, COLOR_BLACK, COLOR_RED);
+    init_pair(2, COLOR_WHITE, COLOR_RED);
     // curs_set(0);                    //make the cursor invisible
     
     signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
@@ -36,6 +36,8 @@ int main(int argc, char *argv[]) {      //argv is the file name
             t.delete_after();        //delete the character after the cursor
         }
         else if(ch=='\033'&&t.mode!=COMMAND){         //if the user input is escape
+            // char ch2=std::cin.get();
+            // std::cin.putback(ch2);
             ch=getch();       //get the next character
             if(ch=='['){        //if the next character is [
                 ch=getch();   //get the next character
@@ -84,6 +86,9 @@ int main(int argc, char *argv[]) {      //argv is the file name
             }
             else if(ch==127){
                 t.pop_ch_cmd();
+            }
+            else if(ch=='\033'){
+                t.mode=READ;
             }
             else{
                 t.insert_cmd(ch);

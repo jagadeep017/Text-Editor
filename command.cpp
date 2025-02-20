@@ -1,6 +1,24 @@
 #include "main.h"
 #include <curses.h>
 
+char is_num(std::string str){
+    for(int i=1;i<str.size();i++){
+        if(str[i]>'9'||str[i]<'0'){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+unsigned int str_to_num(std::string str){
+    unsigned int res=0;
+    for(int i=1;i<str.size();i++){
+        res=res*10+str[i]-'0';
+    }
+    return res;
+}
+
 //run commands in command mode 
 void text::command_do(){
     //wq save and quit
@@ -28,14 +46,20 @@ void text::command_do(){
     else if(!command.compare(":undo")){
         undo();
     }
+    else if(!command.compare(":te")){   //temporary case used for testing
+        // move_to(10,9);
+    }
+    else if(is_num(command)){
+        unsigned int temp = str_to_num(command);
+        if (temp==0) temp=1;
+        move_to(temp-1, 0);
+    }
     else{
         error.append("Not an editor command: ");
         error.append(command,1);
     }
     //w write a new file name
-    //dd to delete the line in read mode
     //:[start],[end]d delete lines from start to end
-    //dl or x to delete letter in read mode
     //dw delete word in read mode
     //yy to copy line in read mode
     //p to paste in readf mode
@@ -54,27 +78,32 @@ void text::r_command_do(){
         delete_line();
         r_command.clear();
     }
-    else if(r_command.back()=='h'){
+    //dl or x to delete letter in read mode
+    else if((r_command.back()=='l'&&r_command[r_command.size()-2]=='d')||r_command.back()=='X'||r_command.back()=='x'){
+        delete_after();
+        r_command.clear();
+    }
+    else if(r_command.back()=='h'||r_command.back()=='H'){
         move_cursor_side(-1);
         r_command.clear();
     }
-    else if(r_command.back()=='l'){
+    else if(r_command.back()=='l'||r_command.back()=='L'){
         move_cursor_side(1);
         r_command.clear();
     }
-    else if(r_command.back()=='j'){
+    else if(r_command.back()=='j'||r_command.back()=='J'){
         move_cursor(1);
         r_command.clear();
     }
-    else if(r_command.back()=='k'){
+    else if(r_command.back()=='k'||r_command.back()=='K'){
         move_cursor(-1);
         r_command.clear();
     }
-    else if(r_command.back()=='u'){
+    else if(r_command.back()=='u'||r_command.back()=='U'){
         undo();
         r_command.clear();
     }
-    else if(r_command.back()=='r'){
+    else if(r_command.back()=='r'||r_command.back()=='R'){
         redo();
         r_command.clear();
     }

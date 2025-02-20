@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 //moves the cursor up or down for pos(int) numbers of lines
 void text::move_cursor(int pos){
@@ -94,6 +93,15 @@ unsigned int text::len(struct line * head){
 }
 
 void text::move_to(unsigned int line,unsigned int col){
+    //0 1600 5000 2500
+    if(line<cursor_line/2){
+        cursor_line=0;
+        Cursorline=head;
+    }
+    else if(line>(cursor_line+line_count)/2){
+        cursor_line=line_count-1;
+        Cursorline=tail;
+    }
     if(cursor_line>line){
         for(unsigned int i=cursor_line-line;i&&Cursorline->prev;i--){
             Cursorline=Cursorline->prev;
@@ -107,6 +115,12 @@ void text::move_to(unsigned int line,unsigned int col){
         }
     }
     Cursor=Cursorline->head;
+    if(line>line_count-1){
+        cursor_line=line_count-1;
+    }
+    else{
+        cursor_line=line;
+    }
     cursor_col=0;
     while(col--&&Cursor->next){
         Cursor=Cursor->next;

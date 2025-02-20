@@ -75,10 +75,17 @@ void text::insert_last(char c,struct charn **head,struct charn **tail){
 void text::save(){
     std::ofstream file;
     file.open("temp.txt");
-    if(!file.is_open()){
-        std::cout<<"Unable to save file"<<std::endl;
+    try{
+        if(!file.is_open()){
+            std::cout<<"Unable to save file"<<std::endl;
+            throw "File saved successfully";
+        }
+    }
+    catch(const std::exception& e) {
+        std::cerr << "Exception: " << e.what() << std::endl;
         exit(0);
     }
+    
     struct line *temp=head;
     struct charn *temp1;
     while(temp){
@@ -92,4 +99,5 @@ void text::save(){
         }
         temp=temp->next;
     }
+    file.close();
 }
