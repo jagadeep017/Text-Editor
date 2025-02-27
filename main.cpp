@@ -9,7 +9,7 @@
 
 
 int main(int argc, char *argv[]) {      //argv is the file name
-    char ch;        //char to store user input
+    int ch;        //char to store user input
 
     text t(argv[1]);        //create a text object with the file name
 
@@ -19,63 +19,41 @@ int main(int argc, char *argv[]) {      //argv is the file name
     raw();
     t.display(y,x);       //display
     noecho();
-    // cbreak();
-    start_color();
+    // start_color();
+    keypad(stdscr, TRUE);
     init_pair(1, COLOR_CYAN, COLOR_BLACK);
     init_pair(2, COLOR_WHITE, COLOR_RED);
-    // curs_set(0);                    //make the cursor invisible
+    //set the delay for escape sequence
+    set_escdelay(50);
     
     signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
 
     while((ch=getch())){      //get the user input
         t.error.clear();
-        if(ch==-102){           //if the '~Z' means change in terminal size
-            getmaxyx(stdscr, y, x);     //get terminal row and col values
+        getmaxyx(stdscr, y, x);     //get terminal row and col values
+
+        if(t.mode!=COMMAND&&ch==KEY_DC){       //if the user input is delete
+            t.delete_after(LOG);        //delete the character after the cursor
         }
-        else if(t.mode!=COMMAND&&ch=='~'){       //if the user input is ~
-            t.delete_after();        //delete the character after the cursor
+        else if(ch=='\033'){         //if the user input is escape
+            t.r_command.clear();      //clear the command      
+            t.mode=READ;             //change the mode to read
         }
-        else if(ch=='\033'&&t.mode!=COMMAND){         //if the user input is escape
-            // char ch2=std::cin.get();
-            // std::cin.putback(ch2);
-            ch=getch();       //get the next character
-            if(ch=='['){        //if the next character is [
-                ch=getch();   //get the next character
-                if(ch=='A'&&t.mode!=COMMAND){    //if the next character is A
-                    t.move_cursor(-1);      //move the cursor up
-                }
-                else if(ch=='B'&&t.mode!=COMMAND){   //if the next character is B
-                    t.move_cursor(1);      //move the cursor down
-                }
-                else if(ch=='C'&&t.mode!=COMMAND){   //if the next character is C
-                    t.move_cursor_side(1);      //move the cursor right
-                }
-                else if(ch=='D'&&t.mode!=COMMAND){   //if the next character is D
-                    t.move_cursor_side(-1);      //move the cursor left
-                }
-                else if(ch=='2'){               //insert esc sequence occured
-                    t.mode=!t.mode;
-                    ch=getch();
-                }
-            }
-            else{
-                t.mode=READ;
-            }
-        }
+        else if(t.esc_seq(ch));
         else if(t.mode==INSERT){
-            if (ch==127) {     //if the user input is backspace
-                t.delete_before();       //delete the character before the cursor
+            if (ch==KEY_BACKSPACE) {     //if the user input is backspace
+                t.delete_before(LOG);       //delete the character before the cursor
             }
             else if (ch=='\n') {                //if the user input is enter
-                t.insert_before('\n');
+                t.insert_before('\n',LOG);
             }
             else if(ch=='\t'){                  //if the user input is tab
                 for(int i=0;i<4;i++){
-                    t.insert_before(' ');
+                    t.insert_before(' ',LOG);
                 }
             }
             else{                               //if the user input is a character
-                t.insert_before(ch);
+                t.insert_before(ch,LOG);
             }
         }
         else if(t.mode==COMMAND){
@@ -83,9 +61,6 @@ int main(int argc, char *argv[]) {      //argv is the file name
                 //do the command
                 t.command_do();
                 t.mode=READ;
-            }
-            else if(ch==127){
-                t.pop_ch_cmd();
             }
             else if(ch=='\033'){
                 t.mode=READ;

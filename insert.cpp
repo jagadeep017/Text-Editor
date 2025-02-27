@@ -2,8 +2,10 @@
 #include <iostream>
 
 //inserts the character before the cursor
-void text::insert_before(char data){
-    insert_undo(data);
+void text::insert_before(char data,unsigned char log){
+    if(log){
+        insert_undo(data,ADD);
+    }
     struct charn *new2=new charn;
     if(new2==NULL) {
         std::cout<<"Memory allocation failure"<<std::endl;
@@ -53,10 +55,13 @@ void text::insert_before(char data){
 }
 
 //inserts the character the cursor is pointing to
-void text::delete_before(){
+void text::delete_before(unsigned char log){
     struct charn *temp=Cursor->prev;
     struct line *temp1=Cursorline->prev;
     if(temp){         //delete the prev element
+        if(log){
+            insert_undo(temp->data,DELETE);
+        }
         if((temp=Cursor->prev->prev)){
             temp->next=Cursor;
             temp=Cursor->prev;
@@ -95,20 +100,23 @@ void text::delete_before(){
         Cursorline=Cursorline->prev;
         cursor_line--;
         line_count--;
+        if(log){
+            insert_undo('\n',DELETE);
+        }
         delete temp1;
     }
     delete temp;
 }
 
 //deletes the character after the cursor
-void text::delete_after(){
+void text::delete_after(unsigned char log){
     if(Cursor->data!='\n'){
         Cursor=Cursor->next;
-        delete_before();
+        delete_before(log);
         cursor_col++;
     }
     else if(Cursor->prev){
-        delete_before();
+        delete_before(log);
     }
 }
 

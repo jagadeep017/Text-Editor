@@ -19,6 +19,13 @@ unsigned int str_to_num(std::string str){
     return res;
 }
 
+char is_valid(char ch){
+    if((ch>='!'&&ch<='~')){     //if the character is a printable character
+        return 1;
+    }
+    return 0;
+}
+
 //run commands in command mode 
 void text::command_do(){
     //wq save and quit
@@ -80,35 +87,53 @@ void text::r_command_do(){
     }
     //dl or x to delete letter in read mode
     else if((r_command.back()=='l'&&r_command[r_command.size()-2]=='d')||r_command.back()=='X'||r_command.back()=='x'){
-        delete_after();
+        delete_after(LOG);
         r_command.clear();
     }
+    //h or H move cursor left
     else if(r_command.back()=='h'||r_command.back()=='H'){
         move_cursor_side(-1);
         r_command.clear();
     }
+    //l or L move cursor right
     else if(r_command.back()=='l'||r_command.back()=='L'){
         move_cursor_side(1);
         r_command.clear();
     }
+    //j or J move cursor down
     else if(r_command.back()=='j'||r_command.back()=='J'){
         move_cursor(1);
         r_command.clear();
     }
+    //k or K move cursor up
     else if(r_command.back()=='k'||r_command.back()=='K'){
         move_cursor(-1);
         r_command.clear();
     }
-    else if(r_command.back()=='u'||r_command.back()=='U'){
+    //u for undo
+    else if(r_command.back()=='u'){
         undo();
         r_command.clear();
     }
-    else if(r_command.back()=='r'||r_command.back()=='R'){
+    //ctrl-r for redo
+    else if(r_command.back()=='\022'){
         redo();
         r_command.clear();
     }
     else if(r_command.back()=='i'||r_command.back()=='I'){
         mode=INSERT;
+    }
+    //r + letter to replace the current letter
+    else if(r_command[r_command.size()-2]=='r'){
+        if(Cursor->data!='\n'){
+            if(r_command.back()=='\t'||r_command.back()==' '){
+                Cursor->data=' ';
+            }
+            else if(is_valid(r_command.back())){
+                Cursor->data=r_command.back();
+            }
+        }
+        r_command.clear();
     }
     else if(r_command.back()==':'){
         mode=COMMAND;
@@ -116,4 +141,61 @@ void text::r_command_do(){
         command.push_back(':');
         r_command.clear();
     }
+}
+
+//to perform esc sequence
+char text::esc_seq(int ch){
+    if(ch==KEY_LEFT){
+        if(mode==COMMAND){
+
+        }
+        else{
+            move_cursor_side(-1);
+        }
+        return 1;
+    }
+    else if(ch==KEY_RIGHT){
+        if(mode==COMMAND){
+
+        }
+        else{
+            move_cursor_side(1);
+        }
+        return 1;
+    }
+    else if(ch==KEY_UP){
+        if(mode==COMMAND){
+
+        }
+        else{
+            move_cursor(-1);
+        }
+        return 1;
+    }
+    else if(ch==KEY_DOWN){
+        if(mode==COMMAND){
+
+        }
+        else{
+            move_cursor(1);
+        }
+        return 1;
+    }
+    else if(ch==KEY_BACKSPACE){
+        if(mode==COMMAND){
+            pop_ch_cmd();
+        }
+        else if(mode==INSERT){
+            delete_before(LOG);
+        }
+        return 1;
+    }
+    else if(ch==KEY_IC&&mode!=COMMAND){
+        mode=!mode;
+        return 1;
+    }
+    else if(ch>255){
+        return 1;
+    }
+    return 0;
 }

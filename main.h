@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#define LOG 1
+
 typedef enum Mode {
     READ,
     INSERT,
@@ -76,7 +78,7 @@ struct undo{
 class text{  
     struct line* head;
     struct line* tail;
-    struct line* Cursorline;
+    struct line* Cursorline;            //to store the address of the cursor line
     struct charn* Cursor;               //to store the address of the cursor
     unsigned int cursor_line;
     unsigned int prev_cursor_col;
@@ -103,9 +105,9 @@ class text{
     void save();
     
     //insert.cpp
-    void insert_before(char data);
-    void delete_before();
-    void delete_after();
+    void insert_before(char data,unsigned char log);
+    void delete_before(unsigned char log);
+    void delete_after(unsigned char log);
     void delete_line();
     void insert_cmd(char ch);
     void pop_ch_cmd();
@@ -119,16 +121,35 @@ class text{
     //command.cpp
     void command_do();
     void r_command_do();
+    char esc_seq(int ch);
 
     //undo.cpp
     void undo();
     void redo();
-    void insert_undo(char ch);
+    void insert_undo(char ch,unsigned char type);
     void push_to_redo(struct str* node);
 };
 
+/*command.cpp
+
+check if the string is a number
+
+returns 1 if the string is a number else 0
+*/
 char is_num(std::string str);
 
+/*command.cpp
+
+converts a string to a number
+
+returns the number
+*/
 unsigned int str_to_num(std::string str);
+
+/*command.cpp
+
+check if the character is insertable or printable like an alphabet , number or a special character
+*/
+char is_valid(char ch);
 
 #endif
