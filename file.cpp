@@ -1,4 +1,5 @@
 #include "main.h"
+#include "search.h"
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -46,6 +47,7 @@ void text::add_data(char* name,struct line **head,struct line **tail,unsigned in
             }
         }
         insert_last('\n',&new1->head,&new1->tail);
+        set_line_color(new1);
         *lines+=1;
         new1->len=line.size();
     }

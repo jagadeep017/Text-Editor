@@ -124,6 +124,7 @@ void text::delete_after(unsigned char log){
 void text::delete_line(){
     if(!line_count) return;
     struct line *temp=Cursorline;
+    insert_line_undo();
     if(Cursorline->next){
         Cursorline=Cursorline->next;
         Cursor=Cursorline->head;

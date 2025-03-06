@@ -51,7 +51,7 @@ void text::command_do(){
         exit(0);
     }
     else if(!command.compare(":undo")){
-        undo();
+        undo(UNDO);
     }
     else if(!command.compare(":te")){   //temporary case used for testing
         // move_to(10,9);
@@ -112,16 +112,17 @@ void text::r_command_do(){
     }
     //u for undo
     else if(r_command.back()=='u'){
-        undo();
+        undo(UNDO);
         r_command.clear();
     }
     //ctrl-r for redo
     else if(r_command.back()=='\022'){
-        redo();
+        undo(REDO);
         r_command.clear();
     }
     else if(r_command.back()=='i'||r_command.back()=='I'){
         mode=INSERT;
+        r_command.clear();
     }
     //r + letter to replace the current letter
     else if(r_command[r_command.size()-2]=='r'){

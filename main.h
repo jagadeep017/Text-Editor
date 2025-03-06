@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-#define LOG 1
+#define NOLOG   0
+#define LOG     1
 
 typedef enum Mode {
     READ,
@@ -124,10 +125,12 @@ class text{
     char esc_seq(int ch);
 
     //undo.cpp
-    void undo();
-    void redo();
+    void undo(char opr);
     void insert_undo(char ch,unsigned char type);
+    void insert_line_undo();
     void push_to_redo(struct str* node);
+    void push_to_undo(struct str* node);
+
 };
 
 /*command.cpp

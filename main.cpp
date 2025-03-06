@@ -1,6 +1,6 @@
-/* Name: Ganta Jagadeep
-    Aim : To write a program that acts like a command line text editer.
-    Date: 02/01/2025
+/* Name  : Ganta Jagadeep
+    Aim  : To write a program that acts like a command line text editer.
+    Date : 02/01/2025
 */
 
 #include <curses.h>
@@ -17,12 +17,15 @@ int main(int argc, char *argv[]) {      //argv is the file name
     int y, x;           //rows and col values of terminal
     getmaxyx(stdscr, y, x); //get terminal row and col values
     raw();
+    
     t.display(y,x);       //display
     noecho();
-    // start_color();
+    start_color();
     keypad(stdscr, TRUE);
-    init_pair(1, COLOR_CYAN, COLOR_BLACK);
+    init_pair(1, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(2, COLOR_WHITE, COLOR_RED);
+    init_pair(3, COLOR_BLUE, COLOR_BLACK);
+    init_pair(4, COLOR_RED, COLOR_BLACK);
     //set the delay for escape sequence
     set_escdelay(50);
     
@@ -73,7 +76,6 @@ int main(int argc, char *argv[]) {      //argv is the file name
             t.r_command.push_back(ch);
             t.r_command_do();
         }
-        
         t.display(y,x);
     }
     return 0;
