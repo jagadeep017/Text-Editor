@@ -1,4 +1,5 @@
 #include "main.h"
+#include "search.h"
 #include <iostream>
 
 //inserts the character before the cursor
@@ -52,6 +53,7 @@ void text::insert_before(char data,unsigned char log){
         cursor_col++;
     }
     Cursorline->len++;
+    set_line_color(Cursorline);
 }
 
 //inserts the character the cursor is pointing to
@@ -106,6 +108,7 @@ void text::delete_before(unsigned char log){
         delete temp1;
     }
     delete temp;
+    set_line_color(Cursorline);
 }
 
 //deletes the character after the cursor

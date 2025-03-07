@@ -1,4 +1,5 @@
 #include "main.h"
+#include "search.h"
 #include <curses.h>
 
 char is_num(std::string str){
@@ -83,11 +84,13 @@ void text::r_command_do(){
     if(r_command.back()=='d'&&r_command[r_command.size()-2]=='d'){
         //delete the line
         delete_line();
+        set_line_color(Cursorline);
         r_command.clear();
     }
     //dl or x to delete letter in read mode
     else if((r_command.back()=='l'&&r_command[r_command.size()-2]=='d')||r_command.back()=='X'||r_command.back()=='x'){
         delete_after(LOG);
+        set_line_color(Cursorline);
         r_command.clear();
     }
     //h or H move cursor left
@@ -113,11 +116,13 @@ void text::r_command_do(){
     //u for undo
     else if(r_command.back()=='u'){
         undo(UNDO);
+        set_line_color(Cursorline);
         r_command.clear();
     }
     //ctrl-r for redo
     else if(r_command.back()=='\022'){
         undo(REDO);
+        set_line_color(Cursorline);
         r_command.clear();
     }
     else if(r_command.back()=='i'||r_command.back()=='I'){
@@ -134,6 +139,7 @@ void text::r_command_do(){
                 Cursor->data=r_command.back();
             }
         }
+        set_line_color(Cursorline);
         r_command.clear();
     }
     else if(r_command.back()==':'){
@@ -188,6 +194,7 @@ char text::esc_seq(int ch){
         }
         else if(mode==INSERT){
             delete_before(LOG);
+            set_line_color(Cursorline);
         }
         return 1;
     }

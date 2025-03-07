@@ -6,10 +6,18 @@ const char *datatypes[19]={"int","char","float","double","long","short","unsigne
 
 //sets color for the cursorline line
 void set_line_color(struct line *Cursorline){
-    char flag=1;
-    struct charn *temp=Cursorline->head,*temp1;
+    static char multi_comment=0;
+    char flag=1,comm_flag=0;
+    struct charn *temp=Cursorline->head,*temp1,*comm=NULL;
     std::string buffer="";
     while(temp->data!='\n'){
+        if(comm_flag||multi_comment){
+            break;
+        }
+        else if(temp->data=='/'&&temp->prev&&temp->prev->data=='/'){
+            comm_flag=1;
+            comm=temp->prev;
+        }
         if((temp->data<='z'&&temp->data>='a')||(temp->data<='Z'&&temp->data>='A')||(temp->data<='9'&&temp->data>='0')||temp->data=='_'){
             buffer.push_back(temp->data);
             if(flag){
@@ -19,30 +27,19 @@ void set_line_color(struct line *Cursorline){
         }
         else{
             flag=1;
-            if(buffer.size()){
-                if(is_keyword(buffer)){
-                    while(temp!=temp1){
-                        temp1->color=3;
-                        temp1=temp1->next;
-                    }
-                }
-                else if(is_datatype(buffer)){
-                    while(temp!=temp1){
-                        temp1->color=4;
-                        temp1=temp1->next;
-                    }
-                }
-                else{
-                    while(temp!=temp1){
-                        temp1->color=0;
-                        temp1=temp1->next;
-                    }
-                }
-                buffer.clear();
-            }
+            set_word_color(buffer, temp1, temp);
             temp->color=0;
         }
         temp=temp->next;
+    }
+    if(comm_flag||multi_comment){
+        while(comm->data!='\n'){
+            comm->color=5;
+            comm=comm->next;
+        }
+    }
+    else if(buffer.size()){
+        set_word_color(buffer, temp1, temp);
     }
 }
 
@@ -62,4 +59,28 @@ bool is_datatype(const std::string &str){
         }
     }
     return false;
+}
+
+void set_word_color(std::string& buffer,struct charn *start,struct charn *end){
+    if(buffer.size()){
+        if(is_keyword(buffer)){
+            while(start!=end){
+                start->color=3;
+                start=start->next;
+            }
+        }
+        else if(is_datatype(buffer)){
+            while(start!=end){
+                start->color=4;
+                start=start->next;
+            }
+        }
+        else{
+            while(start!=end){
+                start->color=0;
+                start=start->next;
+            }
+        }
+        buffer.clear();
+    }
 }

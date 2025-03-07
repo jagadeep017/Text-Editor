@@ -9,4 +9,6 @@ bool is_keyword(const std::string& str);
 
 bool is_datatype(const std::string& str);
 
+void set_word_color(std::string& buffer,struct charn *start,struct charn *end);
+
 #endif

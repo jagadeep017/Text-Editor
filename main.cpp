@@ -26,6 +26,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     init_pair(2, COLOR_WHITE, COLOR_RED);
     init_pair(3, COLOR_BLUE, COLOR_BLACK);
     init_pair(4, COLOR_RED, COLOR_BLACK);
+    init_pair(5, COLOR_GREEN, COLOR_BLACK);
     //set the delay for escape sequence
     set_escdelay(50);
     
