@@ -14,14 +14,18 @@ char is_num(std::string str){
 
 unsigned int str_to_num(std::string str){
     unsigned int res=0;
-    for(int i=1;i<str.size();i++){
+    int i=0;
+    while((str[i]>'9'||str[i]<'0')&&i<str.size()){
+        i++;
+    }
+    for(;i<str.size();i++){
         res=res*10+str[i]-'0';
     }
     return res;
 }
 
 char is_valid(char ch){
-    if((ch>='!'&&ch<='~')){     //if the character is a printable character
+    if((ch>=' '&&ch<='~')){     //if the character is a printable character
         return 1;
     }
     return 0;
@@ -87,6 +91,13 @@ void text::r_command_do(){
         set_line_color(Cursorline);
         r_command.clear();
     }
+    //r + letter to replace the current letter
+    else if(r_command[r_command.size()-2]=='r'){
+        if(is_valid(r_command.back())){
+            replace_cur(r_command.back());
+        }
+        r_command.clear();
+    }
     //dl or x to delete letter in read mode
     else if((r_command.back()=='l'&&r_command[r_command.size()-2]=='d')||r_command.back()=='X'||r_command.back()=='x'){
         delete_after(LOG);
@@ -119,6 +130,10 @@ void text::r_command_do(){
         set_line_color(Cursorline);
         r_command.clear();
     }
+    else if(r_command.back()=='R'){
+        mode=REPLACE;
+        r_command.clear();
+    }
     //ctrl-r for redo
     else if(r_command.back()=='\022'){
         undo(REDO);
@@ -129,23 +144,26 @@ void text::r_command_do(){
         mode=INSERT;
         r_command.clear();
     }
-    //r + letter to replace the current letter
-    else if(r_command[r_command.size()-2]=='r'){
-        if(Cursor->data!='\n'){
-            if(r_command.back()=='\t'||r_command.back()==' '){
-                Cursor->data=' ';
-            }
-            else if(is_valid(r_command.back())){
-                Cursor->data=r_command.back();
-            }
-        }
-        set_line_color(Cursorline);
-        r_command.clear();
-    }
     else if(r_command.back()==':'){
         mode=COMMAND;
         command.clear();
         command.push_back(':');
+        r_command.clear();
+    }
+    else if(r_command.back()=='G'){
+        r_command.pop_back();
+        if(!r_command.size()){
+            move_to(line_count-1, 0);
+        }
+        else{
+            unsigned int temp = str_to_num(r_command);
+            if (temp==0) temp=1;
+            move_to(temp-1, 0);
+        }
+        r_command.clear();
+    }
+    else if(r_command.back()=='g'&&r_command[r_command.size()-2]=='g'){
+        move_to(0, 0);
         r_command.clear();
     }
 }

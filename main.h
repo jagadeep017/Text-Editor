@@ -9,6 +9,7 @@
 typedef enum Mode {
     READ,
     INSERT,
+    REPLACE,
     AUTOSUGGESTION,
     COMMAND,
     EXIT
@@ -17,6 +18,7 @@ typedef enum Mode {
 typedef enum Undotree{
     DELETE,
     ADD,                //insert
+    REPL,               //replace
     UNDO,
     REDO,
 }undotree;
@@ -112,6 +114,7 @@ class text{
     void delete_line();
     void insert_cmd(char ch);
     void pop_ch_cmd();
+    void replace_cur(char ch);
 
     //edit.cpp
     void move_cursor(int pos);

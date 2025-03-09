@@ -10,9 +10,21 @@ void text::undo(char opr){
     else{
         temp=Redo.tail;
         if(!temp)  return;
-        temp->type=!temp->type;
+        if(temp->type!=REPL){
+            temp->type=!temp->type;
+        }
     }
-    if(temp->type==ADD){                            //if the change was insert, delete the characters
+    if(temp->type==REPL){
+        move_to(temp->line, temp->col);
+        for(int i=0;i<temp->data.size();i++){
+            temp->data[i]^=Cursor->data;
+            Cursor->data^=temp->data[i];
+            temp->data[i]^=Cursor->data;
+            Cursor=Cursor->next;
+        }
+
+    }
+    else if(temp->type==ADD){                            //if the change was insert, delete the characters
         move_to(temp->line, temp->col);
         for(int i=0;i<temp->data.size();i++){
             if(temp->data[i]=='\n'){
@@ -55,7 +67,9 @@ void text::undo(char opr){
     else{
         Redo.tail=temp->prev;
         //push the change to the undo stack
-        temp->type=!temp->type;
+        if(temp->type!=REPL){
+            temp->type=!temp->type;
+        }
         push_to_undo(temp);
     }
     
@@ -91,7 +105,12 @@ void text::insert_undo(char ch,unsigned char type){
     if(Undo.tail){
         temp=Undo.tail;
         if(temp->type==type){
-            if(type==ADD){
+            if(type==REPL){
+                if(temp->line==cursor_line&&temp->col+temp->data.size()==cursor_col&&temp->data.size()<20){
+                    temp->data.push_back(ch);
+                }
+            }
+            else if(type==ADD){
                 if(temp->line==cursor_line&&temp->col+temp->data.size()==cursor_col&&ch!=' '&&temp->data.size()<20){
                     temp->data.push_back(ch);
                 }

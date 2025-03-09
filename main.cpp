@@ -60,6 +60,11 @@ int main(int argc, char *argv[]) {      //argv is the file name
                 t.insert_before(ch,LOG);
             }
         }
+        else if(t.mode==REPLACE){
+            if(ch<255&&is_valid(ch)){
+                t.replace_cur(ch);
+            }
+        }
         else if(t.mode==COMMAND){
             if(ch=='\n'){
                 //do the command

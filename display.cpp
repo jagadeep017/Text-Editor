@@ -94,6 +94,12 @@ void text::display(unsigned short int row,unsigned short int col){
         move(courselline,coursercol);
         attroff(A_BOLD);
     }
+    else if(mode==REPLACE){
+        attron(A_BOLD);
+        printw("-- REPLACE --");
+        move(courselline,coursercol);
+        attroff(A_BOLD);
+    }
     else if(error.size()){
         attron(COLOR_PAIR(2));
         printw("%s",error.c_str());

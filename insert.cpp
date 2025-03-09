@@ -174,3 +174,23 @@ void text::pop_ch_cmd(){
         command.pop_back();
     }
 }
+
+void text::replace_cur(char ch){
+    if(Cursor->data=='\n'){
+        insert_before(ch, LOG);
+    }
+    else{
+        char temp;
+        if(ch=='\t'){
+            temp=Cursor->data;
+            Cursor->data=' ';
+        }
+        else{
+            temp=Cursor->data;
+            Cursor->data=ch;
+        }
+        insert_undo(temp, REPL);
+        move_to(cursor_line,cursor_col+1);
+    }
+    set_line_color(Cursorline);
+}
