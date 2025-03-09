@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     getmaxyx(stdscr, y, x); //get terminal row and col values
     raw();
     
-    t.display(y,x);       //display
+    t.display(y, x);       //display
     noecho();
     start_color();
     keypad(stdscr, TRUE);
@@ -32,47 +32,47 @@ int main(int argc, char *argv[]) {      //argv is the file name
     
     signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
 
-    while((ch=getch())){      //get the user input
+    while((ch = getch())){      //get the user input
         t.error.clear();
         getmaxyx(stdscr, y, x);     //get terminal row and col values
 
-        if(t.mode!=COMMAND&&ch==KEY_DC){       //if the user input is delete
+        if(t.mode != COMMAND && ch == KEY_DC){       //if the user input is delete
             t.delete_after(LOG);        //delete the character after the cursor
         }
-        else if(ch=='\033'){         //if the user input is escape
+        else if(ch == '\033'){         //if the user input is escape
             t.r_command.clear();      //clear the command      
-            t.mode=READ;             //change the mode to read
+            t.mode = READ;             //change the mode to read
         }
         else if(t.esc_seq(ch));
-        else if(t.mode==INSERT){
-            if (ch==KEY_BACKSPACE) {     //if the user input is backspace
+        else if(t.mode == INSERT){
+            if (ch == KEY_BACKSPACE) {     //if the user input is backspace
                 t.delete_before(LOG);       //delete the character before the cursor
             }
-            else if (ch=='\n') {                //if the user input is enter
-                t.insert_before('\n',LOG);
+            else if (ch == '\n') {                //if the user input is enter
+                t.insert_before('\n', LOG);
             }
-            else if(ch=='\t'){                  //if the user input is tab
-                for(int i=0;i<4;i++){
-                    t.insert_before(' ',LOG);
+            else if(ch == '\t'){                  //if the user input is tab
+                for(int i = 0; i < 4; i++){
+                    t.insert_before(' ', LOG);
                 }
             }
             else{                               //if the user input is a character
-                t.insert_before(ch,LOG);
+                t.insert_before(ch, LOG);
             }
         }
-        else if(t.mode==REPLACE){
-            if(ch<255&&is_valid(ch)){
+        else if(t.mode == REPLACE){
+            if(ch < 255 && is_valid(ch)){
                 t.replace_cur(ch);
             }
         }
-        else if(t.mode==COMMAND){
-            if(ch=='\n'){
+        else if(t.mode == COMMAND){
+            if(ch == '\n'){
                 //do the command
                 t.command_do();
-                t.mode=READ;
+                t.mode = READ;
             }
-            else if(ch=='\033'){
-                t.mode=READ;
+            else if(ch == '\033'){
+                t.mode = READ;
             }
             else{
                 t.insert_cmd(ch);
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
             t.r_command.push_back(ch);
             t.r_command_do();
         }
-        t.display(y,x);
+        t.display(y, x);
     }
     return 0;
 }

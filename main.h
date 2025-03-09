@@ -29,10 +29,10 @@ struct charn{
     struct charn* next;
     struct charn* prev;
     charn(){
-        data='\0';
-        color=0;
-        next=NULL;
-        prev=NULL;
+        data = '\0';
+        color = 0;
+        next = NULL;
+        prev = NULL;
     }
 };
 
@@ -44,10 +44,10 @@ struct line{
     unsigned int len;
     public:
     line(){
-        head=NULL;
-        tail=NULL;
-        next=NULL;
-        prev=NULL;
+        head = NULL;
+        tail = NULL;
+        next = NULL;
+        prev = NULL;
     }
 };
 
@@ -59,21 +59,21 @@ struct str{
     unsigned int col;
     unsigned char type;
     str(){
-        data="\0";
-        next=NULL;
-        prev=NULL;
-        line=0;
-        type='\0';
-        col=0;
+        data = "\0";
+        next = NULL;
+        prev = NULL;
+        line = 0;
+        type = '\0';
+        col = 0;
     }
 };
 
 struct undo{
     struct str* head;
     struct str* tail;
-    undo(){
-        head=NULL;
-        tail=NULL;
+    undo() {
+        head = NULL;
+        tail = NULL;
     }
 };
 
@@ -100,15 +100,15 @@ class text{
     ~text();
 
     //display.cpp
-    void display(unsigned short int row,unsigned short int col);
+    void display(unsigned short int row, unsigned short int col);
     
     //file.cpp
-    void add_data(char* filename,struct line **head,struct line **tail,unsigned int *lines);
-    void insert_last(char data,struct charn **head,struct charn **tail);
+    void add_data(char* filename, struct line **head, struct line **tail, unsigned int *lines);
+    void insert_last(char data, struct charn **head, struct charn **tail);
     void save();
     
     //insert.cpp
-    void insert_before(char data,unsigned char log);
+    void insert_before(char data, unsigned char log);
     void delete_before(unsigned char log);
     void delete_after(unsigned char log);
     void delete_line();
@@ -120,7 +120,7 @@ class text{
     void move_cursor(int pos);
     void move_cursor_side(int pos);
     unsigned int len(struct line * head);
-    void move_to(unsigned int line,unsigned int col);
+    void move_to(unsigned int line, unsigned int col);
 
     //command.cpp
     void command_do();
@@ -129,7 +129,7 @@ class text{
 
     //undo.cpp
     void undo(char opr);
-    void insert_undo(char ch,unsigned char type);
+    void insert_undo(char ch, unsigned char type);
     void insert_line_undo();
     void push_to_redo(struct str* node);
     void push_to_undo(struct str* node);
