@@ -2,8 +2,8 @@
 #include "search.h"
 #include <curses.h>
 
-char is_num(std::string str){
-    for(int i = 1; i < str.size(); i++){
+char is_num(std::string str,unsigned int offset){
+    for(int i = offset; i < str.size(); i++){
         if(str[i] > '9' || str[i] < '0'){
             return 0;
         }
@@ -12,10 +12,10 @@ char is_num(std::string str){
 }
 
 
-unsigned int str_to_num(std::string str){
+unsigned int str_to_num(std::string str,unsigned int offset){
     unsigned int res = 0;
-    int i = 0;
-    while((str[i] > '9' || str[i] < '0') && i < str.size()){
+    int i = offset;
+    while(i < str.size() && (str[i] > '9' || str[i] < '0')){
         i++;
     }
     for(; i < str.size(); i++){
@@ -61,8 +61,8 @@ void text::command_do(){
     else if(!command.compare(":te")){   //temporary case used for testing
         // move_to(10,9);
     }
-    else if(is_num(command)){
-        unsigned int temp = str_to_num(command);
+    else if(is_num(command,1)){
+        unsigned int temp = str_to_num(command,1);
         if (temp == 0) temp = 1;
         move_to(temp - 1, 0);
     }
@@ -84,10 +84,27 @@ void text::command_do(){
 
 //command in read mode
 void text::r_command_do(){
+	//2w allows us to move the cursor 2 words forward.
+//5j changes your cursor position to 5 lines below.
+//3; lets you go to the next third occurrence of a character.
+//Use b (back) to jump to the beginning of a word backwards
+//Use e (end) to jump to the end of a word
+//Use ge to jump to the end of a word backwards
+//0: Moves to the first character of a line
+//^: Moves to the first non-blank character of a line
+//$: Moves to the end of a line
+// g_: Moves to the non-blank character at the end of a line
     //dd to delete the line in read mode
     if(r_command.back() == 'd' && r_command[r_command.size() - 2] == 'd'){
         //delete the line
-        delete_line();
+        int temp=1;
+        r_command.pop_back(),r_command.pop_back();
+        if(r_command.size()&&is_num(r_command,0)){
+            temp=str_to_num(r_command,0);
+        }
+        for(int i=0;i<temp;i++){
+                delete_line();
+        }
         set_line_color(Cursorline);
         r_command.clear();
     }
@@ -101,7 +118,6 @@ void text::r_command_do(){
     //dl or x to delete letter in read mode
     else if((r_command.back() == 'l' && r_command[r_command.size() - 2] == 'd') || r_command.back() == 'X' || r_command.back() == 'x'){
         delete_after(LOG);
-        set_line_color(Cursorline);
         r_command.clear();
     }
     //h or H move cursor left
@@ -156,7 +172,7 @@ void text::r_command_do(){
             move_to(line_count-1, 0);
         }
         else{
-            unsigned int temp = str_to_num(r_command);
+            unsigned int temp = str_to_num(r_command,0);
             if (temp == 0) temp = 1;
             move_to(temp - 1, 0);
         }
@@ -212,7 +228,6 @@ char text::esc_seq(int ch){
         }
         else if(mode == INSERT){
             delete_before(LOG);
-            set_line_color(Cursorline);
         }
         return 1;
     }

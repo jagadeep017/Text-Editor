@@ -81,7 +81,7 @@ void text::delete_before(unsigned char log){
     else if(temp1){        //if cursor is at the start of the line move to the prev line
         temp = temp1->tail;
         if(temp->prev){
-            cursor_col = temp1->len - 1;
+            cursor_col = temp1->len;
             temp1->tail = temp->prev;
             temp1->tail->next = Cursorline->head;
             Cursorline->head->prev = temp1->tail;
@@ -128,19 +128,11 @@ void text::delete_after(unsigned char log){
 void text::delete_line(){
     if(!line_count) return;
     struct line *temp = Cursorline;
-    insert_line_undo();
     if(Cursorline->next){
+        insert_line_undo();
         Cursorline = Cursorline->next;
         Cursor = Cursorline->head;
-        if(Cursorline->len > cursor_col){
-            unsigned temp3 = cursor_col;
-            cursor_col = 0;
-            move_cursor_side(temp3);
-        }
-        else{
-            cursor_col = 0;
-            move_cursor_side(Cursorline->len - 1);
-        }
+        cursor_col = 0;
         Cursorline->prev = temp->prev;
         if(temp == head){
             head = Cursorline;
@@ -149,10 +141,23 @@ void text::delete_line(){
             temp->prev->next = Cursorline;
         }
     }
-    else{
-        move_to(cursor_line - 1, cursor_col);
+    else if(Cursorline->prev){
+        insert_line_undo();
+        move_to(cursor_line - 1, 0);
         Cursorline->next = NULL;
         tail = Cursorline;
+    }
+    else if(Cursorline->len){
+        struct charn *temp1 = Cursorline->head;
+        unsigned int temp2 = Cursorline->len;
+        for(int i=0;i<temp2;i++){
+            delete_after(LOG);
+        }
+        Cursorline->len = 0;
+        return;
+    }
+    else{
+        return;
     }
     line_count--;
     struct charn *temp1 = temp->head;

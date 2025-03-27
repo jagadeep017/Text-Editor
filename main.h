@@ -142,7 +142,7 @@ check if the string is a number
 
 returns 1 if the string is a number else 0
 */
-char is_num(std::string str);
+char is_num(std::string str, unsigned int offset);
 
 /*command.cpp
 
@@ -150,7 +150,7 @@ converts a string to a number
 
 returns the number
 */
-unsigned int str_to_num(std::string str);
+unsigned int str_to_num(std::string str, unsigned int offset);
 
 /*command.cpp
 

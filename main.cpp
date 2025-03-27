@@ -8,6 +8,11 @@
 #include <signal.h>
 
 
+void handler(int signum){
+    endwin();
+    exit(0);
+}
+
 int main(int argc, char *argv[]) {      //argv is the file name
     int ch;        //char to store user input
 
@@ -16,7 +21,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     initscr();
     int y, x;           //rows and col values of terminal
     getmaxyx(stdscr, y, x); //get terminal row and col values
-    raw();
+    // raw();
     
     t.display(y, x);       //display
     noecho();
@@ -29,8 +34,8 @@ int main(int argc, char *argv[]) {      //argv is the file name
     init_pair(5, COLOR_GREEN, COLOR_BLACK);
     //set the delay for escape sequence
     set_escdelay(50);
-    
-    signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut
+    signal(SIGINT, handler);
+    // signal(SIGINT, SIG_IGN);    // Disable Ctrl-C shortcut signal
 
     while((ch = getch())){      //get the user input
         t.error.clear();

@@ -11,7 +11,7 @@ void text::undo(char opr){
         temp = Redo.tail;
         if(!temp)  return;
         if(temp->type != REPL){
-            temp->type =! temp->type;
+            temp->type = !temp->type;
         }
     }
     if(temp->type == REPL){
@@ -22,7 +22,6 @@ void text::undo(char opr){
             temp->data[i] ^= Cursor->data;
             Cursor = Cursor->next;
         }
-
     }
     else if(temp->type == ADD){                            //if the change was insert, delete the characters
         move_to(temp->line, temp->col);

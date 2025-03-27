@@ -3,7 +3,10 @@
 //moves the cursor up or down for pos(int) numbers of lines
 void text::move_cursor(int pos){
     unsigned int temp;
-    if(pos < 0){                                                  //move up
+    if(pos < 0){  
+        if(!cursor_line){
+            return ;
+        }                                                //move up
         while(pos && cursor_line){
             cursor_line--;
             Cursorline = Cursorline->prev;
@@ -11,7 +14,7 @@ void text::move_cursor(int pos){
         }
     }
     else{                                                       //move down
-        if(pos + cursor_line >= line_count) return;
+        if(1 + cursor_line == line_count) return;
         while(pos && cursor_line < line_count){
             cursor_line++;
             Cursorline = Cursorline->next;
