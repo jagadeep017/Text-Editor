@@ -10,11 +10,12 @@ void text::display(unsigned short int row,unsigned short int col){
     unsigned int linecount = 0, charcount = 0, coursercol = 0, courselline = 0;
     unsigned short temp1 = 0, color = 0;
     unsigned int offset = 0, offset2 = 0;
+    char visual = 0;
     
     if (cursor_line >= row - 4) {
         offset = cursor_line + 4 - row;
     }
-    linecount = line_count;
+    linecount = line_count ? line_count : 1;
     while(linecount){
         temp1++;
         linecount /= 10;
@@ -25,14 +26,45 @@ void text::display(unsigned short int row,unsigned short int col){
         linecount--;
     }
     linecount = offset;
+    // while(1){
+    //     struct line *ptr = temp;
+    // }
+    if((mode == VISUAL || mode == VISUAL_LINE) && visual_line < linecount){
+        visual = 1;
+    }
     while(temp && linecount - offset + offset2 < row - 1){
         charcount = 0;
         struct charn *temp2 = temp->head;
         attron(COLOR_PAIR(1));
         printw("%*d ",temp1,linecount + 1);
         attroff(COLOR_PAIR(1));
+        if(visual){
+            attron(COLOR_PAIR(6));
+        }
         while(temp2 && linecount - offset + offset2 < row - 1){
-            attron(COLOR_PAIR(temp2->color));
+            if(mode == VISUAL || mode == VISUAL_LINE){
+                if(visual_start.start_char == temp2 || visual_start.start_line == temp){
+                    visual = !visual;
+                    if(visual){
+                        attron(COLOR_PAIR(6));
+                    }
+                    else{
+                        attroff(COLOR_PAIR(6));
+                    }
+                }
+                if((mode == VISUAL && Cursor == temp2 ) || (mode == VISUAL_LINE && Cursorline == temp)){
+                    visual = !visual;
+                    if(visual){
+                        attron(COLOR_PAIR(6));
+                    }
+                    else{
+                        attroff(COLOR_PAIR(6));
+                    }
+                }
+            }
+            if(!visual){
+                attron(COLOR_PAIR(temp2->color));
+            }
             if(temp == Cursorline && temp2 == Cursor){
                 if(temp2->data == '\n'){
                     printw(" %c", temp2->data);
@@ -46,7 +78,9 @@ void text::display(unsigned short int row,unsigned short int col){
             else{
                 printw("%c", temp2->data);
             }
-            attroff(COLOR_PAIR(temp2->color));
+            if(!visual){
+                attroff(COLOR_PAIR(temp2->color));
+            }
             charcount++;
             temp2 = temp2->next;
             if(charcount + temp1 == col - 1 && temp2){
@@ -91,27 +125,29 @@ void text::display(unsigned short int row,unsigned short int col){
     if(mode == INSERT) {
         attron(A_BOLD);
         printw("-- INSERT --");
-        move(courselline,coursercol);
+        attroff(A_BOLD);
+    }
+    else if(mode == VISUAL || mode == VISUAL_LINE){
+        attron(A_BOLD);
+        printw("-- VISUAL --");
         attroff(A_BOLD);
     }
     else if(mode == REPLACE){
         attron(A_BOLD);
         printw("-- REPLACE --");
-        move(courselline,coursercol);
         attroff(A_BOLD);
     }
     else if(error.size()){
         attron(COLOR_PAIR(2));
         printw("%s", error.c_str());
-        move(courselline,coursercol);
         attron(COLOR_PAIR(2));
     }
-    else if(mode == COMMAND) {
+    else if(mode == COMMAND){
         attron(A_BOLD);
         printw("%s", command.c_str());
         attroff(A_BOLD);
     }
-    else {
+    if(mode != COMMAND){
         move(courselline,coursercol);
     }
     attroff(COLOR_PAIR(1));

@@ -1,86 +1,78 @@
 #include "main.h"
-#include "search.h"
+#include <cstddef>
 
-const char *keywords[13]={"if","else","while","for","do","switch","case","default","break","continue","return","goto","sizeof"};
-const char *datatypes[19]={"int","char","float","double","long","short","unsigned","signed","void","struct","enum","union","auto","register","static","extern","const","volatile","typedef"};
-
-//sets color for the cursorline line
-void set_line_color(struct line *Cursorline){
-    static char multi_comment=0;
-    char flag=1,comm_flag=0;
-    struct charn *temp=Cursorline->head,*temp1,*comm=NULL;
-    std::string buffer="";
-    while(temp->data!='\n'){
-        if(comm_flag||multi_comment){
-            break;
+void text::search_word(){
+    struct charn *temp = NULL;
+    struct line *temp1 = NULL;
+    unsigned int char_c = 0, line_c = cursor_line;    //remembering at what line result is found
+    if(search_mode == FORWARD){
+        if(Cursorline->next){
+            temp1 = Cursorline->next;
+            line_c++;
         }
-        else if(temp->data=='/'&&temp->prev&&temp->prev->data=='/'){
-            comm_flag=1;
-            comm=temp->prev;
+        else{
+            temp1 = head;
+            line_c = 0;
         }
-        if((temp->data<='z'&&temp->data>='a')||(temp->data<='Z'&&temp->data>='A')||(temp->data<='9'&&temp->data>='0')||temp->data=='_'){
-            buffer.push_back(temp->data);
-            if(flag){
-                temp1=temp;
-                flag=0;
+    }
+    else{
+        if(Cursorline->prev){
+            temp1 = Cursorline->prev;
+            line_c--;
+        }
+        else{
+            temp1 = tail;
+            line_c = line_count - 1;
+        }
+    }
+    while(temp1 != Cursorline){
+        temp = temp1->head;
+        char_c = 0;
+        while(temp){
+            if(temp->data == search[0]){
+                struct charn *temp2 = temp;
+                char found = 1;
+                temp = temp->next;
+                for(int i = 1; i < search.size() && temp; i++){
+                    if(temp->data != search[i]){
+                        temp = temp2;
+                        found = 0;
+                        break ;
+                    }
+                    temp = temp->next;
+                }
+                if(found){
+                    move_to(line_c, char_c);
+                    return ;
+                }
+                else{
+                    temp = temp2->next;
+                }
+            }
+            temp = temp->next;
+            char_c++;
+        }
+        if(search_mode == FORWARD){
+            if(temp1->next){
+                temp1 = temp1->next;
+                line_c++;
+            }
+            else{
+                temp1 = head;
+                line_c = 0;
             }
         }
         else{
-            flag=1;
-            set_word_color(buffer, temp1, temp);
-            temp->color=0;
-        }
-        temp=temp->next;
-    }
-    if(comm_flag||multi_comment){
-        while(comm->data!='\n'){
-            comm->color=5;
-            comm=comm->next;
-        }
-    }
-    else if(buffer.size()){
-        set_word_color(buffer, temp1, temp);
-    }
-}
-
-bool is_keyword(const std::string &str){
-    for(int i=0;i<13;i++){
-        if(str.compare(keywords[i])==0){
-            return true;
-        }
-    }
-    return false;
-}
-
-bool is_datatype(const std::string &str){
-    for(int i=0;i<19;i++){
-        if(str.compare(datatypes[i])==0){
-            return true;
-        }
-    }
-    return false;
-}
-
-void set_word_color(std::string& buffer,struct charn *start,struct charn *end){
-    if(buffer.size()){
-        if(is_keyword(buffer)){
-            while(start!=end){
-                start->color=3;
-                start=start->next;
+            if(temp1->prev){
+                temp1 = temp1->prev;
+                line_c--;
+            }
+            else{
+                temp1 = tail;
+                line_c = line_count - 1;
             }
         }
-        else if(is_datatype(buffer)){
-            while(start!=end){
-                start->color=4;
-                start=start->next;
-            }
-        }
-        else{
-            while(start!=end){
-                start->color=0;
-                start=start->next;
-            }
-        }
-        buffer.clear();
     }
+    error.append("Err: Pattern not found: ");
+    error.append(search);
 }

@@ -1,5 +1,5 @@
 #include "main.h"
-#include "search.h"
+#include "highlight.h"
 #include <iostream>
 
 //inserts the character before the cursor

@@ -1,7 +1,7 @@
-#include "main.h"
-#include <string>
 #ifndef SEARCH_H
 #define SEARCH_H
+#include "main.h"
+#include <string>
 
 void set_line_color(struct line* Cursorline);
 

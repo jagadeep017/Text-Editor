@@ -11,5 +11,5 @@ make
 ## Usage
 
 ```bash
-./txtedit.out filename
+./txtedit filename
 ```

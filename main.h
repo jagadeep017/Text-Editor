@@ -12,8 +12,15 @@ typedef enum Mode {
     REPLACE,
     AUTOSUGGESTION,
     COMMAND,
+    VISUAL,
+    VISUAL_LINE,
     EXIT
 }mode;
+
+typedef enum Find {
+    FORWARD,
+    BACKWARD
+}find;
 
 typedef enum Undotree{
     DELETE,
@@ -89,7 +96,15 @@ class text{
     unsigned int line_count;
     struct undo Undo;
     struct undo Redo;
+    std::string search;
+    unsigned char search_mode;
+    union{
+        struct line* start_line;
+        struct charn* start_char;
+    }visual_start;
+    unsigned int visual_line;
     public:
+    std::string yank;
     std::string command;
     std::string r_command;
     std::string error;
@@ -134,6 +149,8 @@ class text{
     void push_to_redo(struct str* node);
     void push_to_undo(struct str* node);
 
+    //search.cpp
+    void search_word();
 };
 
 /*command.cpp

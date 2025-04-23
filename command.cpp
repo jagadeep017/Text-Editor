@@ -1,5 +1,6 @@
 #include "main.h"
-#include "search.h"
+#include "highlight.h"
+#include <cstdint>
 #include <curses.h>
 
 char is_num(std::string str,unsigned int offset){
@@ -55,17 +56,23 @@ void text::command_do(){
         endwin();   //end the session and resorte the terminal
         exit(0);
     }
-    else if(!command.compare(":undo")){
-        undo(UNDO);
-    }
     else if(!command.compare(":te")){   //temporary case used for testing
         // move_to(10,9);
     }
+    //goto to that line number
     else if(is_num(command,1)){
         unsigned int temp = str_to_num(command,1);
         if (temp == 0) temp = 1;
         move_to(temp - 1, 0);
     }
+    //search
+    else if(command[1] == '/' || command[1] == '?'){
+        search_mode = (command[1] == '/') ? FORWARD : BACKWARD;
+        search.clear();
+        search.append(command, 2);
+        search_word();
+    }
+    //print error for unknown commands
     else{
         error.append("Not an editor command: ");
         error.append(command, 1);
@@ -90,23 +97,38 @@ void text::r_command_do(){
 //Use b (back) to jump to the beginning of a word backwards
 //Use e (end) to jump to the end of a word
 //Use ge to jump to the end of a word backwards
-//0: Moves to the first character of a line
 //^: Moves to the first non-blank character of a line
-//$: Moves to the end of a line
 // g_: Moves to the non-blank character at the end of a line
     //dd to delete the line in read mode
     if(r_command.back() == 'd' && r_command[r_command.size() - 2] == 'd'){
         //delete the line
         int temp=1;
-        r_command.pop_back(),r_command.pop_back();
-        if(r_command.size()&&is_num(r_command,0)){
+        r_command.pop_back(), r_command.pop_back();
+        if(r_command.size() && is_num(r_command,0)){
             temp=str_to_num(r_command,0);
+            if(temp == 0){          //if 0dd delete all content
+                temp = line_count;
+            }
         }
         for(int i=0;i<temp;i++){
-                delete_line();
+            delete_line();
         }
         set_line_color(Cursorline);
         r_command.clear();
+    }
+    //search in normal mode
+    else if(r_command[0] == '/' || r_command[0] == '?'){
+        if(r_command.size() == 1){
+            search.clear();
+        }
+        else if(r_command.back() == '\n'){
+            search_mode = r_command[0] == '/' ? FORWARD :BACKWARD;
+            search_word();
+            r_command.clear();
+        }
+        else{
+            search.push_back(r_command.back());
+        }
     }
     //r + letter to replace the current letter
     else if(r_command[r_command.size() - 2] == 'r'){
@@ -146,6 +168,7 @@ void text::r_command_do(){
         set_line_color(Cursorline);
         r_command.clear();
     }
+    //enter replace mode
     else if(r_command.back() == 'R'){
         mode = REPLACE;
         r_command.clear();
@@ -156,16 +179,50 @@ void text::r_command_do(){
         set_line_color(Cursorline);
         r_command.clear();
     }
-    else if(r_command.back() == 'i' || r_command.back() == 'I'){
+    //move to the start of the line
+    else if(r_command.back() == '0'){
+        move_to(cursor_line, 0);
+        r_command.clear();
+    }
+    //move to the end of the line
+    else if(r_command.back() == '$'){
+        move_to(cursor_line, UINT32_MAX);
+        r_command.clear();
+    }
+    //move to start
+    else if(r_command.back() == 'g' && r_command[r_command.size() - 2] == 'g'){
+        move_to(0, 0);
+        r_command.clear();
+    }
+    //enter into insert mode
+    else if(r_command.back() == 'i' || r_command.back() == 'I' || r_command.back() == 'a' || r_command.back() == 'A'){
+        switch(r_command.back()){
+            case 'I':                   //move to the first non blank character
+                move_to(cursor_line, 0);
+                while(Cursor->data == ' ' && Cursor->data != '\n'){
+                    move_cursor_side(1);
+                }
+                break;
+            case 'a':
+                if(Cursor->data != '\n'){
+                    move_cursor_side(1);
+                }
+                break;
+            case 'A':
+                move_to(cursor_line, UINT32_MAX);
+                break;
+        }
         mode = INSERT;
         r_command.clear();
     }
+    //enter command mode
     else if(r_command.back() == ':'){
         mode = COMMAND;
         command.clear();
         command.push_back(':');
         r_command.clear();
     }
+    //goto a row
     else if(r_command.back() == 'G'){
         r_command.pop_back();
         if(!r_command.size()){
@@ -178,8 +235,33 @@ void text::r_command_do(){
         }
         r_command.clear();
     }
-    else if(r_command.back() == 'g' && r_command[r_command.size() - 2] == 'g'){
-        move_to(0, 0);
+    //search with 'n' and ''N'
+    else if(r_command.size() == 1 && ( r_command.back() == 'n' || r_command.back() == 'N' )){
+        search_mode = r_command.back() == 'n'? FORWARD : BACKWARD;
+        search_word();
+        r_command.clear();
+    }
+    //enter visual mode
+    else if(r_command.back() == 'v'){
+        if(mode == VISUAL){
+            mode = READ;
+        }
+        else{
+            mode = VISUAL;
+            visual_start.start_char = Cursor;
+        }
+        visual_line = cursor_line;
+        r_command.clear();
+    }
+    else if (r_command.back() == 'V'){
+        if(mode == VISUAL_LINE){
+            mode = READ;
+        }
+        else{
+            mode = VISUAL_LINE;
+            visual_start.start_line = Cursorline;
+        }
+        visual_line = cursor_line;
         r_command.clear();
     }
 }

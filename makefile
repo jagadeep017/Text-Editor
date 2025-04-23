@@ -6,7 +6,7 @@ SOURCES = $(wildcard *.cpp)
 
 OBJECTS = $(SOURCES:.cpp=.o)
 
-TARGET = a.out
+TARGET = ./txtedit
 
 DEPENDS = $(OBJECTS:.o=.d)
 

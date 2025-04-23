@@ -9,12 +9,17 @@ text::text(char* filename){
     cursor_col = 0;
     line_count = 0;
     mode = 0;
+    visual_line = 0;
     add_data(filename, &head, &tail, &line_count);
     Cursorline = head;
     Cursor = Cursorline->head;
     command = "";
     error = "";
     r_command = "";
+    search = "";
+    yank = "";
+    search_mode = FORWARD;
+    visual_start.start_line = NULL;
 }
 
 //destructor to delete the text object

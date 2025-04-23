@@ -1,5 +1,5 @@
 #include "main.h"
-#include "search.h"
+#include "highlight.h"
 #include <cstring>
 #include <iostream>
 #include <fstream>
@@ -26,6 +26,7 @@ void text::add_data(char* name, struct line **head, struct line **tail, unsigned
         struct line* new1 = new line;
         insert_last('\n', &new1->head, &new1->tail);
         *head = *tail = new1;
+        line_count=1;
         return;
     }
     while(!file.eof()){
