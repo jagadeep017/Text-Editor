@@ -3,7 +3,7 @@
     Date : 02/01/2025
 */
 
-#include <curses.h>
+#include <ncurses.h>
 #include "main.h"
 #include <signal.h>
 
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
     int y, x;           //rows and col values of terminal
     getmaxyx(stdscr, y, x); //get terminal row and col values
     // raw();
-    
+
     t.display(y, x);       //display
     noecho();
     start_color();
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {      //argv is the file name
             t.delete_after(LOG);        //delete the character after the cursor
         }
         else if(ch == '\033'){         //if the user input is escape
-            t.r_command.clear();      //clear the command      
+            t.r_command.clear();      //clear the command
             t.mode = READ;             //change the mode to read
         }
         else if(t.esc_seq(ch));

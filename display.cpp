@@ -1,5 +1,5 @@
 #include "main.h"
-#include <curses.h>
+#include <ncurses.h>
 
 //display the text in buffer on to the screen using ncurses
 void text::display(unsigned short int row,unsigned short int col){
@@ -11,7 +11,7 @@ void text::display(unsigned short int row,unsigned short int col){
     unsigned short temp1 = 0, color = 0;
     unsigned int offset = 0, offset2 = 0;
     char visual = 0;
-    
+
     if (cursor_line >= row - 4) {
         offset = cursor_line + 4 - row;
     }

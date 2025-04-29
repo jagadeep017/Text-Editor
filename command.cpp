@@ -1,7 +1,7 @@
 #include "main.h"
 #include "highlight.h"
 #include <cstdint>
-#include <curses.h>
+#include <ncurses.h>
 
 char is_num(std::string str,unsigned int offset){
     for(int i = offset; i < str.size(); i++){
@@ -32,7 +32,7 @@ char is_valid(char ch){
     return 0;
 }
 
-//run commands in command mode 
+//run commands in command mode
 void text::command_do(){
     //wq save and quit
     if(!command.compare(":wq")){
@@ -100,7 +100,7 @@ void text::r_command_do(){
 //^: Moves to the first non-blank character of a line
 // g_: Moves to the non-blank character at the end of a line
     //dd to delete the line in read mode
-    if(r_command.back() == 'd' && r_command[r_command.size() - 2] == 'd'){
+    if(r_command.back() == 'd' && r_command.size() == 2 && r_command[r_command.size() - 2] == 'd'){
         //delete the line
         int temp=1;
         r_command.pop_back(), r_command.pop_back();
@@ -131,14 +131,14 @@ void text::r_command_do(){
         }
     }
     //r + letter to replace the current letter
-    else if(r_command[r_command.size() - 2] == 'r'){
+    else if(r_command.size() == 2 && r_command[r_command.size() - 2] == 'r'){
         if(is_valid(r_command.back())){
             replace_cur(r_command.back());
         }
         r_command.clear();
     }
     //dl or x to delete letter in read mode
-    else if((r_command.back() == 'l' && r_command[r_command.size() - 2] == 'd') || r_command.back() == 'X' || r_command.back() == 'x'){
+    else if((r_command.back() == 'l' && r_command.size() == 2 && r_command[r_command.size() - 2] == 'd') || r_command.back() == 'X' || r_command.back() == 'x'){
         delete_after(LOG);
         r_command.clear();
     }
@@ -190,7 +190,7 @@ void text::r_command_do(){
         r_command.clear();
     }
     //move to start
-    else if(r_command.back() == 'g' && r_command[r_command.size() - 2] == 'g'){
+    else if(r_command.back() == 'g' && r_command.size() == 2 && r_command[r_command.size() - 2] == 'g'){
         move_to(0, 0);
         r_command.clear();
     }
