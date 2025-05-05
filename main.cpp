@@ -27,12 +27,12 @@ int main(int argc, char *argv[]) {      //argv is the file name
     noecho();
     start_color();
     keypad(stdscr, TRUE);
-    init_pair(1, COLOR_MAGENTA, COLOR_BLACK);
-    init_pair(2, COLOR_WHITE, COLOR_RED);
-    init_pair(3, COLOR_BLUE, COLOR_BLACK);
-    init_pair(4, COLOR_RED, COLOR_BLACK);
-    init_pair(5, COLOR_GREEN, COLOR_BLACK);
-    init_pair(6, COLOR_WHITE, COLOR_BLUE);
+    init_pair(COLOR_UI, COLOR_MAGENTA, 0);
+    init_pair(COLOR_ERROR, COLOR_WHITE, COLOR_RED);
+    init_pair(COLOR_KEYWORDS, COLOR_BLUE, 0);
+    init_pair(COLOR_TYPES, COLOR_RED, 0);
+    init_pair(COLOR_COMMENTS, COLOR_GREEN, 0);
+    init_pair(COLOR_VISUAL, COLOR_BLACK, COLOR_BLUE);
     //set the delay for escape sequence
     set_escdelay(50);
     signal(SIGINT, handler);

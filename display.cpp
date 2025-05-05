@@ -10,7 +10,7 @@ void text::display(unsigned short int row,unsigned short int col){
     unsigned int linecount = 0, charcount = 0, coursercol = 0, courselline = 0;
     unsigned short temp1 = 0, color = 0;
     unsigned int offset = 0, offset2 = 0;
-    char visual = 0;
+    char visual = 0, end = 0;
 
     if (cursor_line >= row - 4) {
         offset = cursor_line + 4 - row;
@@ -38,12 +38,26 @@ void text::display(unsigned short int row,unsigned short int col){
         attron(COLOR_PAIR(1));
         printw("%*d ",temp1,linecount + 1);
         attroff(COLOR_PAIR(1));
+        if(mode == VISUAL_LINE){
+            if(visual_start.start_line == temp){
+                visual = !visual;
+                if(visual){
+                    attron(COLOR_PAIR(6));
+                }
+                else{
+                    attroff(COLOR_PAIR(6));
+                }
+            }
+            if(Cursorline == temp || Cursorline == visual_start.start_line){
+                end = 1;
+            }
+        }
         if(visual){
             attron(COLOR_PAIR(6));
         }
         while(temp2 && linecount - offset + offset2 < row - 1){
-            if(mode == VISUAL || mode == VISUAL_LINE){
-                if(visual_start.start_char == temp2 || visual_start.start_line == temp){
+            if(mode == VISUAL){
+                if(visual_start.start_char == temp2){
                     visual = !visual;
                     if(visual){
                         attron(COLOR_PAIR(6));
@@ -52,7 +66,7 @@ void text::display(unsigned short int row,unsigned short int col){
                         attroff(COLOR_PAIR(6));
                     }
                 }
-                if((mode == VISUAL && Cursor == temp2 ) || (mode == VISUAL_LINE && Cursorline == temp)){
+                if(Cursor == temp2){
                     visual = !visual;
                     if(visual){
                         attron(COLOR_PAIR(6));
@@ -91,6 +105,10 @@ void text::display(unsigned short int row,unsigned short int col){
         }
         temp = temp->next;
         linecount++;
+        if(end){
+            visual = 0;
+            attroff(COLOR_PAIR(6));
+        }
     }
     if(line_count<row-1){
         temp1 = row - 1 - line_count;

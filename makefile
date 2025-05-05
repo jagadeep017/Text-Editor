@@ -33,6 +33,7 @@ HAS_NCURSES := $(shell pkg-config --exists ncursesw 2>/dev/null && echo "yes")
 
 check-deps:
 ifneq ($(HAS_NCURSES),yes)
+	@echo "ncurses already installed"
 ifeq ($(PKG_MGR),unknown)
 	$(error Cannot install ncurses automatically - please install ncurses development package manually)
 else

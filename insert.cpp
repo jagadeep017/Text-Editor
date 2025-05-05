@@ -3,7 +3,7 @@
 #include <iostream>
 
 //inserts the character before the cursor
-void text::insert_before(char data,unsigned char log){
+void text::insert_before(char data, unsigned char log){
     if(log){
         insert_undo(data, ADD);
     }

@@ -17,6 +17,16 @@ typedef enum Mode {
     EXIT
 }mode;
 
+typedef enum Color{
+    COLOR_NILL,
+    COLOR_UI,
+    COLOR_ERROR,
+    COLOR_KEYWORDS,
+    COLOR_TYPES,
+    COLOR_COMMENTS,
+    COLOR_VISUAL
+}color;
+
 typedef enum Find {
     FORWARD,
     BACKWARD
@@ -85,7 +95,7 @@ struct undo{
 };
 
 
-class text{  
+class text{
     struct line* head;
     struct line* tail;
     struct line* Cursorline;            //to store the address of the cursor line
@@ -109,19 +119,19 @@ class text{
     std::string r_command;
     std::string error;
     unsigned char mode;
-    
+
     //constructor.cpp
     text(char* filename);
     ~text();
 
     //display.cpp
     void display(unsigned short int row, unsigned short int col);
-    
+
     //file.cpp
     void add_data(char* filename, struct line **head, struct line **tail, unsigned int *lines);
     void insert_last(char data, struct charn **head, struct charn **tail);
     void save();
-    
+
     //insert.cpp
     void insert_before(char data, unsigned char log);
     void delete_before(unsigned char log);
