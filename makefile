@@ -1,63 +1,61 @@
+# GNU Make
+# C++ compiler
 CXX = g++
 
+# Linker flags to include the ncurses wide-character library
 LDFLAGS = -lncursesw -ltinfo
 
+# Source, Object, and Target files
 SOURCES = $(wildcard *.cpp)
-
 OBJECTS = $(SOURCES:.cpp=.o)
-
 TARGET = ./txtedit
 
+# Dependency files
 DEPENDS = $(OBJECTS:.o=.d)
 
-all: $(TARGET)
+# Default target: check dependencies first, then build
+all: deps $(TARGET)
 
-PKG_MGR := $(shell \
-    if command -v apt-get >/dev/null 2>&1; then echo "apt"; \
-    elif command -v dnf >/dev/null 2>&1; then echo "dnf"; \
-    elif command -v pacman >/dev/null 2>&1; then echo "pacman"; \
-    elif command -v zypper >/dev/null 2>&1; then echo "zypper"; \
-    else echo "unknown"; fi)
+# New target to check and install dependencies
+deps:
+	@if ! pkg-config --exists ncursesw; then \
+		echo "-> Required library 'ncursesw' not found. Attempting installation..."; \
+		if command -v apt-get >/dev/null; then \
+			echo "--> Using apt-get (Debian/Ubuntu)..."; \
+			sudo apt-get update && sudo apt-get install -y libncursesw5-dev; \
+		elif command -v dnf >/dev/null; then \
+			echo "--> Using dnf (Fedora/RHEL)..."; \
+			sudo dnf install -y ncurses-devel; \
+		elif command -v pacman >/dev/null; then \
+			echo "--> Using pacman (Arch Linux)..."; \
+			sudo pacman -S --noconfirm ncurses; \
+		else \
+			echo "ERROR: Could not find a supported package manager (apt, dnf, pacman)."; \
+			echo "Please install the ncurses development library for your system manually."; \
+			exit 1; \
+		fi; \
+	else \
+		echo "-> Dependency 'ncursesw' is satisfied."; \
+	fi
 
-ifeq ($(PKG_MGR),apt)
-  NCURSES_PKG = libncursesw-dev
-else ifeq ($(PKG_MGR),dnf)
-  NCURSES_PKG = ncurses-devel
-else ifeq ($(PKG_MGR),pacman)
-  NCURSES_PKG = ncurses
-else ifeq ($(PKG_MGR),zypper)
-  NCURSES_PKG = ncurses-devel
-endif
-
-HAS_NCURSES := $(shell pkg-config --exists ncursesw 2>/dev/null && echo "yes")
-
-check-deps:
-ifneq ($(HAS_NCURSES),yes)
-	@echo "ncurses already installed"
-ifeq ($(PKG_MGR),unknown)
-	$(error Cannot install ncurses automatically - please install ncurses development package manually)
-else
-	@echo "Installing ncurses using $(PKG_MGR)..."
-	@if [ "$(PKG_MGR)" = "apt" ]; then sudo apt-get update && sudo apt-get install -y $(NCURSES_PKG); \
-	elif [ "$(PKG_MGR)" = "dnf" ]; then sudo dnf install -y $(NCURSES_PKG); \
-	elif [ "$(PKG_MGR)" = "pacman" ]; then sudo pacman -Sy --noconfirm $(NCURSES_PKG); \
-	elif [ "$(PKG_MGR)" = "zypper" ]; then sudo zypper install -y $(NCURSES_PKG); fi
-endif
-endif
-
+# Rule to link the object files into the final executable
 $(TARGET): $(OBJECTS)
 	$(CXX) $(OBJECTS) $(LDFLAGS) -o $@
 
+# Rule to compile source files into object files
 %.o: %.cpp
 	$(CXX) -c $< -o $@
 
+# Include dependency files
 -include $(DEPENDS)
 
+# Debug build target
 debug: CXX += -g
 debug: all
 
-
+# Clean target to remove generated files
 clean:
 	rm -f $(OBJECTS) $(TARGET) $(DEPENDS)
 
-.PHONY: all clean
+# Declare targets that are not files
+.PHONY: all clean deps

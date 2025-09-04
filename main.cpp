@@ -5,7 +5,7 @@
 
 #include <ncurses.h>
 #include "main.h"
-#include <signal.h>
+#include <csignal>
 
 
 void handler(int signum){
@@ -27,11 +27,11 @@ int main(int argc, char *argv[]) {      //argv is the file name
     noecho();
     start_color();
     keypad(stdscr, TRUE);
-    init_pair(COLOR_UI, COLOR_MAGENTA, 0);
+    init_pair(COLOR_UI, COLOR_MAGENTA, COLOR_BLACK);
     init_pair(COLOR_ERROR, COLOR_WHITE, COLOR_RED);
-    init_pair(COLOR_KEYWORDS, COLOR_BLUE, 0);
-    init_pair(COLOR_TYPES, COLOR_RED, 0);
-    init_pair(COLOR_COMMENTS, COLOR_GREEN, 0);
+    init_pair(COLOR_KEYWORDS, COLOR_BLUE, COLOR_BLACK);
+    init_pair(COLOR_TYPES, COLOR_RED, COLOR_BLACK);
+    init_pair(COLOR_COMMENTS, COLOR_GREEN, COLOR_BLACK);
     init_pair(COLOR_VISUAL, COLOR_BLACK, COLOR_BLUE);
     //set the delay for escape sequence
     set_escdelay(50);
@@ -53,9 +53,6 @@ int main(int argc, char *argv[]) {      //argv is the file name
         else if(t.mode == INSERT){
             if (ch == KEY_BACKSPACE) {     //if the user input is backspace
                 t.delete_before(LOG);       //delete the character before the cursor
-            }
-            else if (ch == '\n') {                //if the user input is enter
-                t.insert_before('\n', LOG);
             }
             else if(ch == '\t'){                  //if the user input is tab
                 for(int i = 0; i < 4; i++){
